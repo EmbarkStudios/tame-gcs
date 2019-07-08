@@ -118,7 +118,7 @@ matrix:
     deploy:
       provider: cargo
       token:
-        secure: <SEKRET>
+        secure: lpaCXgPfN9vZD0MbYAClZGq+HxdZujB1QLYgiapNJwwwTaMBncboKYphPM9IjJmYoC758gQABu6j4H4R9J3QnTNF4HxpoNrvRE+MYE0DK70p4wkv5zfUQPThGcgljYY4YDY4bO3GQeBGtY6Igy5XMT2pcSkpNoxgQ9htyY2ufQrt1fVSf+7sde9Wtp3oEAtTm5ZAa8xfuOMxWkAyxYviMy9N6ZMHpZwHPR6IZ3bsCGEpQ9JI58xe61J1qHzjqhZWwvKMs58MwHcnR1VtFMbmMgSwM9CpWrhRfYYDpx7Qugo7EoDKuuaAh8qQHEoto9Gex3yWUePHq3cB27Tdxyt7yt9sI3PNU8xFTgWbx9BmmSR1zsOoxRjVfWOkcknZebbEqq529pNSEWUFHxa2IBFyBVWNRBJe3Y4PxW+SMHdWnFA736qIHBFFlnR4zop4f0/hSpS8ERPElwIeIEEc4APm03gqdbGtO/Bjh3rkPyo071yCDOTDQ9UMrWjkcpf0YgLSdFZi29EJ3dLPsbz91xloaca87G7n2plx/DuVyoA1jKH9+ezDfXoM47PTQCTVIrJws8k/gB7zp9d3o33QaeEH/GlWY80TYTAswxyooiui6ZVyt1mtqA3f7qjap2egk8RXZ6TZ1CHigjIp1jYW5GXm9Gq89Bd53lj069b7EQvPbRM=
       on:
         repo: EmbarkStudios/tame-gcs
         tags: true
