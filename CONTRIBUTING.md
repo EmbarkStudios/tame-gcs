@@ -1,10 +1,8 @@
-# Contributor Guidelines
+# Embark Contributor Guidelines
 
-Welcome! We're glad you're interested in contributing to our projects.
+Welcome! This project is created by the team at [Embark Studios](https://embark.games). We're glad you're interested in contributing! We welcome contributions from people of all backgrounds who are interested in making great software with us.
 
-We welcome contributions from people of all backgrounds who are interested in making great software with us.
-
-[TODO more background]
+At Embark, we aspire to empower everyone to create interactive experiences. To do this, we're exploring and pushing the boundaries of new technologies, and sharing our learnings with the open source community.
 
 If you have ideas for collaboration, email us at opensource@embark-studios.com.
 
@@ -30,7 +28,13 @@ Issues will be closed and tagged as `wontfix` if we decide that we do not wish t
 
 ## Contribution Workflow
 
-If you want to make changes or add functionality to one of our projects, you can .......
+### Open Issues
+
+If you're ready to contribute, start by looking at our open issues tagged as [`help wanted`](../../issues?q=is%3Aopen+is%3Aissue+label%3A"help+wanted") or [`good first issue`](../../issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue").
+
+You can comment on the issue to let others know you're interested in working on it or to ask questions.
+
+### Making Changes
 
 1. Fork the repository.
 
@@ -42,13 +46,9 @@ If you want to make changes or add functionality to one of our projects, you can
 
 5. A maintainer will review your pull request and may ask you to make changes.
 
-## Code Guidelines
-
-You can read about our standards and recommendations for working with Rust [here](development-guidelines.md).
-
 ## Licensing
 
-Unless otherwise specified, all Embark open source projects are licensed under a dual MIT/Apache-2.0 license, allowing licensees to chose either at their option. You can read more in each project's respective README.
+Unless otherwise specified, all Embark open source projects are licensed under a dual MIT OR Apache-2.0 license, allowing licensees to chose either at their option. You can read more in each project's respective README.
 
 ## Code of Conduct
 
