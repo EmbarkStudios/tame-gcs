@@ -24,6 +24,25 @@ pub enum Error {
     Json(#[fail(cause)] JsonError),
     #[fail(display = "Response body doesn't contain enough data")]
     InsufficientData,
+    #[fail(display = "Key rejected: {}", _0)]
+    KeyRejected(&'static str),
+    #[fail(display = "An error occurred during signing")]
+    SigningError,
+    #[fail(
+        display = "An expiration duration was too long: requested = {}, max = {}",
+        requested, max
+    )]
+    TooLongExpiration { requested: u64, max: u64 },
+    #[fail(display = "Failed to parse url {}", _0)]
+    UrlParse(url::ParseError),
+    #[fail(display = "Unable to stringize header value '{:?}'", _0)]
+    OpaqueHeaderValue(http::header::HeaderValue),
+    #[fail(display = "I/O error occurred: {}", _0)]
+    Io(#[fail(cause)] IoError),
+    #[fail(display = "Unable to decode base64: {}", _0)]
+    Base64Decode(base64::DecodeError),
+    #[fail(display = "Unable to url encode: {}", _0)]
+    UrlEncode(serde_urlencoded::ser::Error),
 }
 
 #[derive(Debug)]
@@ -82,6 +101,27 @@ impl From<http::StatusCode> for Error {
     }
 }
 
+#[derive(Debug, Fail)]
+pub struct IoError(std::io::Error);
+
+impl PartialEq for IoError {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.kind() == other.0.kind()
+    }
+}
+
+impl fmt::Display for IoError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
+        Error::Io(IoError(e))
+    }
+}
+
 #[derive(Debug)]
 pub struct JsonError(pub(crate) serde_json::Error);
 
@@ -110,6 +150,18 @@ impl std::error::Error for JsonError {
     }
 }
 
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        Error::Json(JsonError(e))
+    }
+}
+
+impl From<serde_urlencoded::ser::Error> for Error {
+    fn from(e: serde_urlencoded::ser::Error) -> Self {
+        Error::UrlEncode(e)
+    }
+}
+
 #[derive(Debug, PartialEq, Deserialize)]
 pub struct ApiErrorInner {
     domain: Option<String>,
@@ -127,5 +179,19 @@ pub struct ApiError {
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:#?}", self)
+    }
+}
+
+#[cfg(feature = "signing")]
+impl From<ring::error::KeyRejected> for Error {
+    fn from(re: ring::error::KeyRejected) -> Self {
+        Error::KeyRejected(re.description_())
+    }
+}
+
+#[cfg(feature = "signing")]
+impl From<ring::error::Unspecified> for Error {
+    fn from(_re: ring::error::Unspecified) -> Self {
+        Error::SigningError
     }
 }

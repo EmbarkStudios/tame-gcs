@@ -13,6 +13,7 @@ pub use crate::v1::*;
 
 pub mod error;
 mod response;
+pub mod signed_url;
 pub mod signing;
 pub mod types;
 pub mod util;
