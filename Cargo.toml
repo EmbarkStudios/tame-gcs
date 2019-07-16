@@ -28,10 +28,20 @@ untrusted = { version = "0.6.2", optional = true }
 url = "1.7.2"
 
 [dev-dependencies]
+# COLORS!
+ansi_term = "0.11.0"
 # Diff view of test failures
 difference = "2.0.0"
 # Use environment for arguments
 dotenv = "0.14.1"
+# Because progress bars are fun
+indicatif = "0.11.0"
+# For doing actual requests in examples
+reqwest = { version = "0.9.18", default-features = false, features = ["rustls-tls"] }
+# Because it's good
+structopt = "0.2.18"
+# For doing actual authentication in examples
+tame-oauth = { version = "0.2.0", features = ["gcp"] }
 
 [features]
 default = ["v1"]
