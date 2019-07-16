@@ -22,3 +22,8 @@ http = "0.1.17"
 serde = { version = "1.0.94", features = [ "derive" ] }
 serde_json = "1.0.40"
 url = "1.7.2"
+
+[features]
+default = ["v1"]
+# GCS JSON API v1 - Currently the only version of the API
+v1 = []
