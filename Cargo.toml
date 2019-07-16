@@ -27,6 +27,12 @@ serde_urlencoded = "0.5.5"
 untrusted = { version = "0.6.2", optional = true }
 url = "1.7.2"
 
+[dev-dependencies]
+# Diff view of test failures
+difference = "2.0.0"
+# Use environment for arguments
+dotenv = "0.14.1"
+
 [features]
 default = ["v1"]
 # GCS JSON API v1 - Currently the only version of the API
