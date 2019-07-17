@@ -41,6 +41,7 @@ impl Input {
 }
 
 #[test]
+#[ignore]
 fn download_object() {
     let url_signer = signed_url::UrlSigner::with_ring();
 
@@ -72,6 +73,7 @@ fn download_object() {
 }
 
 #[test]
+#[ignore]
 fn gets_failure_responses_for_expired_urls() {
     let url_signer = signed_url::UrlSigner::with_ring();
 
