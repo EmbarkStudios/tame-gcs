@@ -1,26 +1,50 @@
 use crate::error::Error;
+use std::fmt;
 
+/// The supported algorithms for creating a digest of content
 pub enum DigestAlgorithm {
     Sha256,
 }
 
+/// The supported algorithms for signing payloads
 pub enum SigningAlgorithm {
     RsaSha256,
 }
 
+/// The supported key formats
 pub enum Key<'a> {
+    /// Unencrypted PKCS#8 RSA private key. See [ring](https://briansmith.org/rustdoc/ring/signature/struct.RsaKeyPair.html#method.from_pkcs8)
+    /// for more information
     Pkcs8(&'a [u8]),
+    /// Uncencrypted RSA private key that isn't wrapped in PKCS#8. See [ring](https://briansmith.org/rustdoc/ring/signature/struct.RsaKeyPair.html#method.from_der)
+    /// for more information
     Der(&'a [u8]),
+    /// See [ring](https://briansmith.org/rustdoc/ring/hmac/index.html) for more information.
     Hmac(&'a [u8]),
 }
 
-/// Calculate a digest of a block of data, the algorithm determines
-/// the size of the slice used for returning the digest
+impl<'a> fmt::Debug for Key<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            Key::Pkcs8(_) => "pkcs8",
+            Key::Der(_) => "der",
+            Key::Hmac(_) => "hmac",
+        };
+
+        write!(f, "{}", name)
+    }
+}
+
+/// Used to calculate a digest of payloads with a specific algorithm
 pub trait DigestCalulator {
+    /// Calculate a digest of a block of data, the algorithm determines the size
+    /// of the slice used for returning the digest
     fn digest(&self, algorithm: DigestAlgorithm, data: &[u8], output_digest: &mut [u8]);
 }
 
+/// Used to sign a block of data
 pub trait Signer {
+    /// Sign a block of data with the specified algorith, and a private key
     fn sign(
         &self,
         algorithm: SigningAlgorithm,
@@ -29,30 +53,39 @@ pub trait Signer {
     ) -> Result<Vec<u8>, Error>;
 }
 
+/// Internal type use to grab the pieces of the service account we need for signing
 #[derive(Deserialize, Debug, Clone)]
 struct ServiceAccountInfo {
     /// The private key we use to sign
-    pub private_key: String,
+    private_key: String,
     /// The unique id used as the issuer of the JWT claim
-    pub client_email: String,
+    client_email: String,
 }
 
+/// Provides the details needed for signing a URL
 pub trait KeyProvider {
+    /// The actual key used to sign the URL
     fn key(&self) -> Key<'_>;
+    /// The identifier for the key author, in GCP this is the email
+    /// address of the service account
     fn authorizer(&self) -> &str;
 }
 
+/// A [GCP service account](https://cloud.google.com/iam/docs/creating-managing-service-account-keys),
+/// used as a `KeyProvider` when signing URLs.
 pub struct ServiceAccount {
     key: Vec<u8>,
     email: String,
 }
 
 impl ServiceAccount {
+    /// Attempts to load a service account from a JSON file
     pub fn load_json_file<P: AsRef<std::path::Path>>(path: P) -> Result<Self, Error> {
         let file_content = std::fs::read(path)?;
         Self::load_json(file_content)
     }
 
+    /// Attempts to load a service account from a JSON byte slice
     pub fn load_json<B: AsRef<[u8]>>(json_data: B) -> Result<Self, Error> {
         let info: ServiceAccountInfo = serde_json::from_slice(json_data.as_ref())?;
 
@@ -91,6 +124,7 @@ impl KeyProvider for ServiceAccount {
     }
 }
 
+/// Implements `DigestCalculator` via [`ring`](https://briansmith.org/rustdoc/ring/digest/index.html)
 #[cfg(feature = "signing")]
 pub struct RingDigest;
 
@@ -113,6 +147,7 @@ impl DigestCalulator for RingDigest {
     }
 }
 
+/// Implements `Signer` via [`ring`](https://briansmith.org/rustdoc/ring/signature/index.html)
 #[cfg(feature = "signing")]
 pub struct RingSigner;
 
