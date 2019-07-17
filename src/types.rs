@@ -1,14 +1,24 @@
 use crate::error::Error;
 use std::{borrow::Cow, convert::TryFrom};
 
-// TODO: Maybe a DNS bucket name as well
-
+/// A wrapper around strings meant to be used as bucket names,
+/// to validate they conform to [Bucket Name Requirements](https://cloud.google.com/storage/docs/naming#requirements)
 #[derive(Debug)]
 pub struct BucketName<'a> {
     name: Cow<'a, str>,
 }
 
 impl<'a> BucketName<'a> {
+    /// Creates a BucketName without validating it, meaning
+    /// that invalid names will result in API failures when
+    /// requests are actually made to GCS instead.
+    pub fn non_validated<S: AsRef<str> + ?Sized>(name: &'a S) -> Self {
+        Self {
+            name: Cow::Borrowed(name.as_ref()),
+        }
+    }
+
+    /// Validates the string is a syntactically valid bucket name
     fn validate(name: &str) -> Result<(), Error> {
         let count = name.chars().count();
 
@@ -101,12 +111,24 @@ impl<'a> TryFrom<String> for BucketName<'a> {
     }
 }
 
+/// A wrapper for strings meant to be used as object names, to validate
+/// that they follow [Object Name Requirements](https://cloud.google.com/storage/docs/naming#objectnames)
 #[derive(Debug)]
 pub struct ObjectName<'a> {
     name: Cow<'a, str>,
 }
 
 impl<'a> ObjectName<'a> {
+    /// Creates an ObjectName without validating it, meaning
+    /// that invalid names will result in API failures when
+    /// requests are actually made to GCS instead.
+    pub fn non_validated<S: AsRef<str> + ?Sized>(name: &'a S) -> Self {
+        Self {
+            name: Cow::Borrowed(name.as_ref()),
+        }
+    }
+
+    /// Validates the string is a syntactically valid object name
     fn validate(name: &str) -> Result<(), Error> {
         // Object names can contain any sequence of valid Unicode characters, of length 1-1024 bytes when UTF-8 encoded.
         if name.is_empty() || name.len() > 1024 {
@@ -194,6 +216,66 @@ impl<'a> TryFrom<String> for ObjectName<'a> {
         Ok(Self {
             name: Cow::Owned(n),
         })
+    }
+}
+
+impl<'a> AsRef<BucketName<'a>> for (&'a BucketName<'a>, &'a ObjectName<'a>) {
+    fn as_ref(&self) -> &BucketName<'a> {
+        self.0
+    }
+}
+
+impl<'a> AsRef<ObjectName<'a>> for (&'a BucketName<'a>, &'a ObjectName<'a>) {
+    fn as_ref(&self) -> &ObjectName<'a> {
+        self.1
+    }
+}
+
+pub trait ObjectIdentifier<'a> {
+    fn bucket(&self) -> &BucketName<'a>;
+    fn object(&self) -> &ObjectName<'a>;
+}
+
+impl<'a, T> ObjectIdentifier<'a> for T
+where
+    T: AsRef<BucketName<'a>> + AsRef<ObjectName<'a>>,
+{
+    fn bucket(&self) -> &BucketName<'a> {
+        self.as_ref()
+    }
+
+    fn object(&self) -> &ObjectName<'a> {
+        self.as_ref()
+    }
+}
+
+pub struct ObjectId<'a> {
+    bucket: BucketName<'a>,
+    object: ObjectName<'a>,
+}
+
+impl<'a> ObjectId<'a> {
+    pub fn new<B, O>(bucket: B, object: O) -> Result<Self, Error>
+    where
+        B: std::convert::TryInto<BucketName<'a>, Error = Error> + ?Sized,
+        O: std::convert::TryInto<ObjectName<'a>, Error = Error> + ?Sized,
+    {
+        Ok(Self {
+            bucket: bucket.try_into()?,
+            object: object.try_into()?,
+        })
+    }
+}
+
+impl<'a> AsRef<BucketName<'a>> for ObjectId<'a> {
+    fn as_ref(&self) -> &BucketName<'a> {
+        &self.bucket
+    }
+}
+
+impl<'a> AsRef<ObjectName<'a>> for ObjectId<'a> {
+    fn as_ref(&self) -> &ObjectName<'a> {
+        &self.object
     }
 }
 

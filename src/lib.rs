@@ -1,25 +1,33 @@
 #![warn(clippy::all)]
 #![warn(rust_2018_idioms)]
 
-#[macro_use(Deserialize)]
+#[macro_use(Deserialize, Serialize)]
 extern crate serde;
 #[macro_use(Fail)]
 extern crate failure;
 
+#[cfg(feature = "v1")]
+mod v1;
+#[cfg(feature = "v1")]
+pub use crate::v1::*;
+
 pub mod error;
-pub mod objects;
 mod response;
+pub mod signed_url;
+pub mod signing;
 pub mod types;
+pub mod util;
 
 // Reexport the http crate since everything this crate does
 // is put in terms of http request/response
 pub use http;
 
+pub use error::Error;
 pub use response::{ApiResponse, Response};
-pub use types::{BucketName, ObjectName};
+pub use types::{BucketName, ObjectId, ObjectName};
 
-/// The oauth scopes that pertain to Google Cloud Storage.
-/// See https://cloud.google.com/storage/docs/authentication
+/// The [oauth scopes](https://cloud.google.com/storage/docs/authentication)
+/// that pertain to Google Cloud Storage.
 pub enum Scopes {
     /// Only allows access to read data, including listing buckets.
     ReadOnly,
@@ -28,10 +36,10 @@ pub enum Scopes {
     /// Allows full control over data, including the ability to modify IAM policies.
     FullControl,
     /// View your data across Google Cloud Platform services.
-    /// For Cloud Storage, this is the same as devstorage.read-only.
+    /// For Cloud Storage, this is the same as `devstorage.read-only`.
     CloudPlatformReadOnly,
     /// View and manage data across all Google Cloud Platform services.
-    /// For Cloud Storage, this is the same as devstorage.full-control.
+    /// For Cloud Storage, this is the same as `devstorage.full-control`.
     CloudPlatform,
 }
 
@@ -47,13 +55,4 @@ impl AsRef<str> for Scopes {
             Scopes::CloudPlatform => "https://www.googleapis.com/auth/cloud-platform",
         }
     }
-}
-
-fn get_content_length(headers: &http::HeaderMap) -> Option<usize> {
-    headers.get(http::header::CONTENT_LENGTH).and_then(|h| {
-        h.to_str()
-            .map_err(|_| ())
-            .and_then(|hv| hv.parse::<u64>().map(|l| l as usize).map_err(|_| ()))
-            .ok()
-    })
 }
