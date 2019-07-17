@@ -188,3 +188,23 @@ impl Signer for RingSigner {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn loads_svc_account() {
+        use super::KeyProvider;
+
+        let acct = super::ServiceAccount::load_json_file("./tests/test_account.json").unwrap();
+
+        match acct.key() {
+            super::Key::Pkcs8(_) => {}
+            key => panic!("invalid key format {:?}", key),
+        }
+
+        assert_eq!(
+            acct.authorizer(),
+            "real-address@very-good-project-id.iam.gserviceaccount.com"
+        );
+    }
+}
