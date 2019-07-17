@@ -50,15 +50,27 @@ pub(crate) struct Args {
         )
     )]
     method: Method,
-    /// The duration that ths signed url will be valid for.
+    /// 
     /// Times may be specified with no suffix (default hours), or
     /// with s = seconds, m = minutes, h = hours, d = days.
-    #[structopt(short, default_value = "1h", parse(try_from_str = "parse_duration"))]
+    #[structopt(
+        short,
+        default_value = "1h",
+        parse(try_from_str = "parse_duration"),
+        long_help = "The duration that ths signed url will be valid for.
+
+Times may be specified with no suffix (default hours), or one of:
+* (s)econds
+* (m)inutes
+* (h)ours
+* (d)ays
+
+")]
     duration: std::time::Duration,
-    /// The content-type for which the url is valid for
+    /// The content-type for which the url is valid for, eg. "application/json"
     #[structopt(short)]
     content_type: Option<String>,
-    /// The gs url
+    /// The gs:// url
     url: url::Url,
 }
 

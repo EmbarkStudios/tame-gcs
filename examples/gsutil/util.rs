@@ -2,6 +2,7 @@ use failure::{format_err, Error, ResultExt};
 use std::{convert::TryInto, sync::Arc};
 use tame_oauth::gcp as oauth;
 
+/// Converts a vanilla http::Request into a reqwest::Request
 fn convert_request<B>(
     req: http::Request<B>,
     client: &reqwest::Client,
@@ -51,7 +52,8 @@ where
         .build()?)
 }
 
-/// Converts a GCS response into
+/// Converts a reqwest::Response into a vanilla http::Response. This currently copies
+/// the entire response body into a single buffer with no streaming
 fn convert_response(mut res: reqwest::Response) -> Result<http::Response<bytes::Bytes>, Error> {
     use std::io::Read;
 
@@ -101,6 +103,7 @@ pub struct RequestContext {
     pub auth: Arc<oauth::ServiceAccountAccess>,
 }
 
+/// Executes a GCS request via a reqwest client and returns the parsed response/API error
 pub fn execute<B, R>(ctx: &RequestContext, mut req: http::Request<B>) -> Result<R, Error>
 where
     R: tame_gcs::ApiResponse<bytes::Bytes>,
@@ -135,7 +138,7 @@ where
     };
 
     // Add the authorization token, note that the tame-oauth crate will automatically
-    // set the HeaderValue correctly, in the GCP case this is usually "Bearer"
+    // set the HeaderValue correctly, in the GCP case this is usually "Bearer <token>"
     req.headers_mut()
         .insert(http::header::AUTHORIZATION, token.try_into()?);
 
@@ -146,6 +149,7 @@ where
     Ok(R::try_from_parts(response)?)
 }
 
+/// Converts a `gs://<bucket_name>/<object_name>` url into an regular object identifer
 pub fn gs_url_to_object_id(url: &url::Url) -> Result<tame_gcs::ObjectId<'_>, Error> {
     match url.scheme() {
         "gs" => {
