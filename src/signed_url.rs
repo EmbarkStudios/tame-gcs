@@ -4,9 +4,9 @@ use url::{percent_encoding as perc_enc, Url};
 
 /// A generator for [signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls),
 /// which can be used to grant temporary access to specific storage
-/// resources even if the client making the request is not otherwise 
+/// resources even if the client making the request is not otherwise
 /// logged in or normally has access to the storage resources in question.
-/// 
+///
 /// This implements the [V4 signing process](https://cloud.google.com/storage/docs/access-control/signing-urls-manually)
 pub struct UrlSigner<D, S> {
     digester: D,

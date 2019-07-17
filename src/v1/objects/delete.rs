@@ -1,5 +1,5 @@
 use crate::{
-    common::{StandardQueryParameters, Conditionals},
+    common::{Conditionals, StandardQueryParameters},
     error::Error,
     response::ApiResponse,
     types::ObjectIdentifier,
@@ -29,7 +29,7 @@ impl ApiResponse<bytes::Bytes> for DeleteObjectResponse {}
 
 impl<B> TryFrom<http::Response<B>> for DeleteObjectResponse
 where
-    B: AsRef<[u8]>
+    B: AsRef<[u8]>,
 {
     type Error = Error;
 

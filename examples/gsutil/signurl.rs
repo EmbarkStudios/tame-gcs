@@ -1,7 +1,7 @@
 use crate::util;
 use failure::Error;
 use structopt::{clap::arg_enum, StructOpt};
-use tame_gcs::{signing, signed_url};
+use tame_gcs::{signed_url, signing};
 
 arg_enum! {
     #[derive(Copy, Clone, Debug)]
@@ -25,7 +25,11 @@ fn parse_duration(src: &str) -> Result<std::time::Duration, Error> {
     let suffix_pos = src.find(char::is_alphabetic).unwrap_or_else(|| src.len());
 
     let num: u64 = src[..suffix_pos].parse()?;
-    let suffix = if suffix_pos == src.len() { "h" } else { &src[suffix_pos..] };
+    let suffix = if suffix_pos == src.len() {
+        "h"
+    } else {
+        &src[suffix_pos..]
+    };
 
     let duration = match suffix {
         "s" | "S" => Duration::from_secs(num),
@@ -44,15 +48,9 @@ pub(crate) struct Args {
     #[structopt(
         short,
         default_value = "GET",
-        raw(
-            possible_values = "&Method::variants()",
-            case_insensitive = "true"
-        )
+        raw(possible_values = "&Method::variants()", case_insensitive = "true")
     )]
     method: Method,
-    /// 
-    /// Times may be specified with no suffix (default hours), or
-    /// with s = seconds, m = minutes, h = hours, d = days.
     #[structopt(
         short,
         default_value = "1h",
@@ -65,7 +63,8 @@ Times may be specified with no suffix (default hours), or one of:
 * (h)ours
 * (d)ays
 
-")]
+"
+    )]
     duration: std::time::Duration,
     /// The content-type for which the url is valid for, eg. "application/json"
     #[structopt(short)]
@@ -86,7 +85,10 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     };
 
     if let Some(content_type) = args.content_type {
-        options.headers.insert(http::header::CONTENT_TYPE, http::header::HeaderValue::from_str(&content_type)?);
+        options.headers.insert(
+            http::header::CONTENT_TYPE,
+            http::header::HeaderValue::from_str(&content_type)?,
+        );
     }
 
     options.method = match args.method {
@@ -100,17 +102,15 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         Method::Patch => http::Method::PATCH,
         Method::Trace => http::Method::TRACE,
         Method::Resumable => {
-            options.headers.insert(http::header::HeaderName::from_static("x-goog-resumable"), http::header::HeaderValue::from_static("start"));
+            options.headers.insert(
+                http::header::HeaderName::from_static("x-goog-resumable"),
+                http::header::HeaderValue::from_static("start"),
+            );
             http::Method::POST
         }
     };
 
-    let signed_url = url_signer
-        .generate(
-            &service_account,
-            &oid,
-            options,
-        )?;
+    let signed_url = url_signer.generate(&service_account, &oid, options)?;
 
     println!("{}", signed_url);
 

@@ -238,7 +238,7 @@ pub trait ObjectIdentifier<'a> {
 
 impl<'a, T> ObjectIdentifier<'a> for T
 where
-    T: AsRef<BucketName<'a>> + AsRef<ObjectName<'a>>
+    T: AsRef<BucketName<'a>> + AsRef<ObjectName<'a>>,
 {
     fn bucket(&self) -> &BucketName<'a> {
         self.as_ref()

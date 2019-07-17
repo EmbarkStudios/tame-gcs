@@ -17,7 +17,9 @@ where
                 .and_then(|ct| ct.to_str().ok())
             {
                 if ct.starts_with("application/json") {
-                    if let Ok(api_err) = serde_json::from_slice::<error::ApiError>(resp.body().as_ref()) {
+                    if let Ok(api_err) =
+                        serde_json::from_slice::<error::ApiError>(resp.body().as_ref())
+                    {
                         return Err(Error::API(api_err));
                     }
                 }
