@@ -7,6 +7,7 @@ use crate::{
 use std::{convert::TryFrom, io};
 
 #[derive(Default, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DownloadObjectOptional<'a> {
     #[serde(flatten)]
     pub standard_params: StandardQueryParameters<'a>,
