@@ -27,3 +27,8 @@ pub fn get_content_length(headers: &http::HeaderMap) -> Option<usize> {
             .ok()
     })
 }
+
+#[allow(clippy::trivially_copy_pass_by_ref)]
+pub(crate) fn if_false(v: &bool) -> bool {
+    !v
+}

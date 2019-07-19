@@ -23,11 +23,13 @@ mod delete;
 mod download;
 mod get;
 mod insert;
+mod list;
 
 pub use delete::*;
 pub use download::*;
 pub use get::*;
 pub use insert::*;
+pub use list::*;
 
 pub struct Object;
 

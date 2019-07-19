@@ -1,8 +1,10 @@
+use std::convert::TryFrom;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},
-    objects::{DeleteObjectOptional, InsertObjectOptional, Object},
+    objects::{self, DeleteObjectOptional, InsertObjectOptional, Object},
     BucketName, ObjectId, ObjectName,
 };
+
 mod util;
 
 #[test]
@@ -127,4 +129,36 @@ fn delete_all_optional() {
         .unwrap();
 
     util::requests_eq(&delete_req, &expected);
+}
+
+#[test]
+fn list_prefix_and_delimit() {
+    let list_req = Object::list(
+        &BucketName::non_validated("cache"),
+        Some(objects::ListOptional {
+            delimiter: Some("/"),
+            prefix: Some("testing/"),
+            ..Default::default()
+        }),
+    )
+    .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::GET)
+        .uri("https://www.googleapis.com/storage/v1/b/cache/o?prettyPrint=false&delimiter=%2F&prefix=testing%2F")
+        .body(std::io::empty())
+        .unwrap();
+
+    util::requests_eq(&list_req, &expected);
+}
+
+#[test]
+fn parses_list_response() {
+    let body = r#"{"kind":"storage#objects","prefixes":["testing/subdir/"],"items":[{"kind":"storage#object","id":"cache/testing/.gitignore/1563464155846959","selfLink":"https://www.googleapis.com/storage/v1/b/cache/o/testing%2F.gitignore","name":"testing/.gitignore","bucket":"cache","generation":"1563464155846959","metageneration":"1","contentType":"application/octet-stream","timeCreated":"2019-07-18T15:35:55.846Z","updated":"2019-07-18T15:35:55.846Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T15:35:55.846Z","size":"30","md5Hash":"gVBKyp57x/mn4QvE+0fLvg==","mediaLink":"https://www.googleapis.com/download/storage/v1/b/cache/o/testing%2F.gitignore?generation=1563464155846959&alt=media","contentLanguage":"en","crc32c":"f+2iuw==","etag":"CK+yg+3lvuMCEAE="},{"kind":"storage#object","id":"cache/testing/test.zstd/1563439578444057","selfLink":"https://www.googleapis.com/storage/v1/b/cache/o/testing%2Ftest.zstd","name":"testing/test.zstd","bucket":"cache","generation":"1563439578444057","metageneration":"1","timeCreated":"2019-07-18T08:46:18.443Z","updated":"2019-07-18T08:46:18.443Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T08:46:18.443Z","size":"688753933","md5Hash":"UQVzf70LIALAl6hdKnNnnA==","mediaLink":"https://www.googleapis.com/download/storage/v1/b/cache/o/testing%2Ftest.zstd?generation=1563439578444057&alt=media","crc32c":"OFE4Lg==","etag":"CJnizaWKvuMCEAE="}]}"#;
+
+    let response = http::Response::new(body);
+    let list_response = objects::ListResponse::try_from(response).expect("parsed list response");
+
+    assert_eq!(2, list_response.objects.len());
+    assert!(list_response.page_token.is_none());
 }
