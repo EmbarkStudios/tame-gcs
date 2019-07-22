@@ -67,6 +67,9 @@ impl super::Object {
 
         let mut req_builder = http::Request::builder();
 
-        Ok(req_builder.method("DELETE").uri(uri).body(std::io::empty())?)
+        Ok(req_builder
+            .method("DELETE")
+            .uri(uri)
+            .body(std::io::empty())?)
     }
 }
