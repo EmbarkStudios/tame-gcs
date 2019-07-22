@@ -69,7 +69,7 @@ fn delete_vanilla() {
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
         .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false")
-        .body(())
+        .body(std::io::empty())
         .unwrap();
 
     util::requests_eq(&delete_req, &expected);
@@ -93,7 +93,7 @@ fn delete_some_optional() {
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
         .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false&generation=20&ifMetagenerationNotMatch=999")
-        .body(())
+        .body(std::io::empty())
         .unwrap();
 
     util::requests_eq(&delete_req, &expected);
@@ -125,7 +125,7 @@ fn delete_all_optional() {
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
         .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?fields=field1&quotaUser=some-user&userIp=some-user-ip&generation=1&ifGenerationMatch=2&ifGenerationNotMatch=3&ifMetagenerationMatch=4&ifMetagenerationNotMatch=5&userProject=some-user-project")
-        .body(())
+        .body(std::io::empty())
         .unwrap();
 
     util::requests_eq(&delete_req, &expected);

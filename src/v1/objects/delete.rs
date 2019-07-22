@@ -52,7 +52,7 @@ impl super::Object {
     pub fn delete<'a, OID>(
         id: &OID,
         optional: Option<DeleteObjectOptional<'_>>,
-    ) -> Result<http::Request<()>, Error>
+    ) -> Result<http::Request<std::io::Empty>, Error>
     where
         OID: ObjectIdentifier<'a> + ?Sized,
     {
@@ -67,6 +67,6 @@ impl super::Object {
 
         let mut req_builder = http::Request::builder();
 
-        Ok(req_builder.method("DELETE").uri(uri).body(())?)
+        Ok(req_builder.method("DELETE").uri(uri).body(std::io::empty())?)
     }
 }
