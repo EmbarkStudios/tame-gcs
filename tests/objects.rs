@@ -179,3 +179,14 @@ fn parses_list_response() {
     assert_eq!(2, list_response.objects.len());
     assert!(list_response.page_token.is_none());
 }
+
+#[test]
+fn parses_empty_list_response() {
+    let body = r#"{"kind":"storage#objects"}"#;
+
+    let response = http::Response::new(body);
+    let list_response = objects::ListResponse::try_from(response).expect("parsed list response");
+
+    assert_eq!(0, list_response.objects.len());
+    assert!(list_response.page_token.is_none());
+}
