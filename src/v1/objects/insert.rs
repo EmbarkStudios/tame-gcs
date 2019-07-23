@@ -84,9 +84,16 @@ impl super::Object {
     where
         OID: ObjectIdentifier<'a> + ?Sized,
     {
-        let mut uri = crate::__make_obj_url!(
+        let mut uri = format!(
             "https://www.googleapis.com/upload/storage/v1/b/{}/o?name={}&uploadType=media",
-            id
+            url::percent_encoding::percent_encode(
+                id.bucket().as_ref(),
+                url::percent_encoding::PATH_SEGMENT_ENCODE_SET,
+            ),
+            url::percent_encoding::percent_encode(
+                id.object().as_ref(),
+                url::percent_encoding::QUERY_ENCODE_SET,
+            ),
         );
 
         let query = optional.unwrap_or_default();

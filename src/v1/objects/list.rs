@@ -77,6 +77,9 @@ where
         #[derive(Deserialize)]
         struct RawListResponse {
             next_page_token: Option<String>,
+            // This field won't be present if the list doesn't actually
+            // return any items
+            #[serde(default)]
             items: Vec<super::ObjectMetadata>,
         }
 

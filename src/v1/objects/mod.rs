@@ -13,7 +13,7 @@ macro_rules! __make_obj_url {
             ),
             url::percent_encoding::percent_encode(
                 $id.object().as_ref(),
-                url::percent_encoding::QUERY_ENCODE_SET
+                url::percent_encoding::PATH_SEGMENT_ENCODE_SET
             )
         )
     }};

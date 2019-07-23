@@ -12,7 +12,7 @@ fn insert_vanilla() {
     let insert_req = Object::insert_simple(
         &(
             &BucketName::non_validated("bucket"),
-            &ObjectName::non_validated("object"),
+            &ObjectName::non_validated("object/with/deep/path"),
         ),
         "great content",
         13,
@@ -22,7 +22,7 @@ fn insert_vanilla() {
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=object&uploadType=media&prettyPrint=false")
+        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "application/octet-stream")
         .header(http::header::CONTENT_LENGTH, 13)
         .body("great content")
@@ -56,11 +56,28 @@ fn insert_json_content() {
 }
 
 #[test]
+fn vanilla_get() {
+    let get_req = Object::get(
+        &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
+        None,
+    )
+    .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::GET)
+        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
+        .body(std::io::empty())
+        .unwrap();
+
+    util::requests_eq(&get_req, &expected);
+}
+
+#[test]
 fn delete_vanilla() {
     let delete_req = Object::delete(
         &(
             &BucketName::non_validated("bucket"),
-            &ObjectName::non_validated("object"),
+            &ObjectName::non_validated("object/with/deep/path"),
         ),
         None,
     )
@@ -68,7 +85,7 @@ fn delete_vanilla() {
 
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false")
+        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object%2Fwith%2Fdeep%2Fpath?prettyPrint=false")
         .body(std::io::empty())
         .unwrap();
 
@@ -160,5 +177,16 @@ fn parses_list_response() {
     let list_response = objects::ListResponse::try_from(response).expect("parsed list response");
 
     assert_eq!(2, list_response.objects.len());
+    assert!(list_response.page_token.is_none());
+}
+
+#[test]
+fn parses_empty_list_response() {
+    let body = r#"{"kind":"storage#objects"}"#;
+
+    let response = http::Response::new(body);
+    let list_response = objects::ListResponse::try_from(response).expect("parsed list response");
+
+    assert_eq!(0, list_response.objects.len());
     assert!(list_response.page_token.is_none());
 }
