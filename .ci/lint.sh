@@ -25,6 +25,6 @@ travis_fold end "cargo.fetch"
 # Because rust isn't brutal enough itself
 travis_fold start "clippy"
     travis_time_start
-        cargo clippy -- -D warnings
+        cargo clippy --tests --examples --all-features -- -D warnings
     travis_time_finish
 travis_fold end "clippy"
