@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 mod cat;
+mod cp;
 #[cfg(feature = "signing")]
 mod signurl;
 mod stat;
@@ -14,6 +15,9 @@ enum Command {
     /// Concatenate object content to stdout
     #[structopt(name = "cat")]
     Cat(cat::Args),
+    /// Copy files and objects
+    #[structopt(name = "cp")]
+    Cp(cp::Args),
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
@@ -56,6 +60,7 @@ fn real_main() -> Result<(), Error> {
 
     match args.cmd {
         Command::Cat(args) => cat::cmd(&ctx, args),
+        Command::Cp(args) => cp::cmd(&ctx, args),
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args),
         Command::Stat(args) => stat::cmd(&ctx, args),
