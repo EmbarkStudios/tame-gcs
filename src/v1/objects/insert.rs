@@ -43,14 +43,14 @@ pub struct InsertObjectOptional<'a> {
 
 /// The response from an insert request is the Object [metadata](https://cloud.google.com/storage/docs/json_api/v1/objects#resource)
 /// for the newly inserted Object
-pub struct InsertObjectResponse {
-    pub metadata: super::ObjectMetadata,
+pub struct InsertResponse {
+    pub metadata: super::Metadata,
 }
 
-impl ApiResponse<&[u8]> for InsertObjectResponse {}
-impl ApiResponse<bytes::Bytes> for InsertObjectResponse {}
+impl ApiResponse<&[u8]> for InsertResponse {}
+impl ApiResponse<bytes::Bytes> for InsertResponse {}
 
-impl<B> TryFrom<http::Response<B>> for InsertObjectResponse
+impl<B> TryFrom<http::Response<B>> for InsertResponse
 where
     B: AsRef<[u8]>,
 {
@@ -58,7 +58,7 @@ where
 
     fn try_from(response: http::Response<B>) -> Result<Self, Self::Error> {
         let (_parts, body) = response.into_parts();
-        let metadata: super::ObjectMetadata = serde_json::from_slice(body.as_ref())?;
+        let metadata: super::Metadata = serde_json::from_slice(body.as_ref())?;
         Ok(Self { metadata })
     }
 }

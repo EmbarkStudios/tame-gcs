@@ -58,7 +58,7 @@ pub struct ListOptional<'a> {
 }
 
 pub struct ListResponse {
-    pub objects: Vec<super::ObjectMetadata>,
+    pub objects: Vec<super::Metadata>,
     pub page_token: Option<String>,
 }
 
@@ -80,7 +80,7 @@ where
             // This field won't be present if the list doesn't actually
             // return any items
             #[serde(default)]
-            items: Vec<super::ObjectMetadata>,
+            items: Vec<super::Metadata>,
         }
 
         let res: RawListResponse = serde_json::from_slice(body.as_ref())?;

@@ -37,9 +37,7 @@ pub struct Object;
 /// associated with an Object.
 #[derive(Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ObjectMetadata {
-    /// The kind of item this is. For objects, this is always `storage#object`.
-    pub kind: Option<String>,
+pub struct Metadata {
     /// The ID of the object, including the bucket name, object name, and generation number.
     pub id: Option<String>,
     /// The link to this object.
