@@ -110,7 +110,15 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         }
     };
 
-    let signed_url = url_signer.generate(&service_account, &oid, options)?;
+    let signed_url = url_signer.generate(
+        &service_account,
+        &(
+            oid.bucket(),
+            oid.object()
+                .ok_or_else(|| failure::format_err!("must have a valid object name"))?,
+        ),
+        options,
+    )?;
 
     println!("{}", signed_url);
 

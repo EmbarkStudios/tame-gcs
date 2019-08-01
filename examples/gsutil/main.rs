@@ -54,7 +54,7 @@ fn real_main() -> Result<(), Error> {
 
     let ctx = util::RequestContext {
         client,
-        cred_path: cred_path,
+        cred_path,
         auth: std::sync::Arc::new(svc_account_access),
     };
 

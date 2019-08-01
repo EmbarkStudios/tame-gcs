@@ -202,7 +202,7 @@ fn insert_multipart_text() {
         content_type: Some("text/plain".to_owned()),
         metadata: Some(
             ["akey"]
-                .into_iter()
+                .iter()
                 .map(|k| (String::from(*k), format!("{}value", k)))
                 .collect(),
         ),
@@ -268,7 +268,7 @@ fn multipart_read_paranoid() {
         content_type: Some("text/plain".to_owned()),
         metadata: Some(
             ["key_one", "key_two", "should_sort_first"]
-                .into_iter()
+                .iter()
                 .map(|k| (String::from(*k), format!("{}value", k)))
                 .collect(),
         ),

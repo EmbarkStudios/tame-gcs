@@ -4,7 +4,7 @@ use std::io::Read;
 pub fn cmp_strings(expected: &str, actual: &str) {
     if expected != actual {
         let cs = difference::Changeset::new(expected, actual, "\n");
-        assert!(false, "{}", cs);
+        panic!("{}", cs);
     }
 }
 

@@ -58,7 +58,7 @@ fn download_object() {
         )
         .expect("signed url");
 
-    let mut body = Vec::with_capacity(1 * 1024 * 1024);
+    let mut body = Vec::with_capacity(1024 * 1024);
 
     let mut response = Client::new()
         .get(signed)
