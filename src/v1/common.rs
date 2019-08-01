@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[allow(clippy::trivially_copy_pass_by_ref)]
 fn pretty_on(pretty_print: &bool) -> bool {
     *pretty_print
@@ -70,7 +72,7 @@ pub struct Conditionals {
 }
 
 /// [Storage classes](https://cloud.google.com/storage/docs/storage-classes)
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum StorageClass {
     /// [Multi-Regional Storage](https://cloud.google.com/storage/docs/storage-classes#multi-regional)
@@ -106,6 +108,12 @@ pub enum StorageClass {
     /// Regional Storage also has better performance, particularly in terms of availability
     /// (DRA has a 99% availability SLA).
     DurableReducedAvailability,
+}
+
+impl fmt::Display for StorageClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 #[derive(Serialize)]
