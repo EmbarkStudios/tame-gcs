@@ -6,6 +6,7 @@ use structopt::StructOpt;
 mod cat;
 #[cfg(feature = "signing")]
 mod signurl;
+mod stat;
 mod util;
 
 #[derive(StructOpt)]
@@ -16,6 +17,8 @@ enum Command {
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
+    #[structopt(name = "stat")]
+    Stat(stat::Args),
 }
 
 #[derive(StructOpt)]
@@ -55,6 +58,7 @@ fn real_main() -> Result<(), Error> {
         Command::Cat(args) => cat::cmd(&ctx, args),
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args),
+        Command::Stat(args) => stat::cmd(&ctx, args),
     }
 }
 
