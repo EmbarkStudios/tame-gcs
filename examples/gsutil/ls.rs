@@ -9,7 +9,9 @@ use tame_gcs::{
 
 #[derive(StructOpt, Debug)]
 pub(crate) struct Args {
-    /// Recurse into directories (not implemented!)
+    /// Recurse into directories, may want to take care with this
+    /// as it could consume a lot of memory depending on the contents
+    /// you query
     #[structopt(short = "R", long)]
     recurse: bool,
     /// Displays extended metadata as a table
@@ -19,6 +21,9 @@ pub(crate) struct Args {
     url: url::Url,
 }
 
+/// Does an ls of a gs bucket minus the prefix specified by the user, this
+/// tries to mimic [exa](https://github.com/ogham/exa) when it can. Would also
+/// be good to support https://github.com/ogham/exa/blob/master/src/info/filetype.rs at some point
 pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
@@ -37,20 +42,24 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         Display::Normal
     };
 
-    let mut normal = None;
-    //let recurse = None;
-    if args.recurse {
-        // recurse = Some(RecursePrinter {
-        //     display,
-        //     prefix_len,
-        //     dirs: HashSet::new(),
-        // });
-    } else {
-        normal = Some(NormalPrinter {
+    let mut recurse = if args.recurse {
+        Some(RecursePrinter {
             display,
             prefix_len,
-        });
-    }
+            items: Vec::new(),
+        })
+    } else {
+        None
+    };
+
+    let normal = if !args.recurse {
+        Some(NormalPrinter {
+            display,
+            prefix_len,
+        })
+    } else {
+        None
+    };
 
     let fields = match display {
         Display::Normal => "items(name), prefixes, nextPageToken",
@@ -77,10 +86,9 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
 
         if let Some(ref np) = normal {
             np.print(ls_res.objects, ls_res.prefixes);
+        } else if let Some(ref mut rec) = recurse {
+            rec.append(ls_res.objects);
         }
-        // } else if let Some(ref mut rec) = recurse {
-        //     rec.print(ls_res.objects);
-        // }
 
         // If we have a page token it means there may be more items
         // that fulfill the parameters
@@ -88,6 +96,10 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         if page_token.is_none() {
             break;
         }
+    }
+
+    if let Some(ref rec) = recurse {
+        rec.print();
     }
 
     Ok(())
@@ -194,32 +206,130 @@ impl NormalPrinter {
     }
 }
 
-// struct RecursePrinter {
-//     display: Display,
-//     prefix_len: usize,
-//     dir_stack: Vec<String>,
-// }
+struct SimpleMetadata {
+    name: String,
+    size: u64,
+    updated: String,
+}
 
-// impl RecursePrinter {
-//     fn print(&mut self, items: Vec<Metadata>) {
-//         for item in items {
-//             let filename = &item.name.unwrap()[self.prefix_len..];
+struct RecursePrinter {
+    display: Display,
+    prefix_len: usize,
+    items: Vec<Vec<SimpleMetadata>>,
+}
 
-//             self.write_dirs(filename);
-//         }
-//     }
+use std::io::Write;
 
-//     fn write_dirs(&mut self, filename: &str) {
-//         if let Some(sep) = filename.rfind('/') {
-//             let filename = &filename[..sep];
+impl RecursePrinter {
+    fn append(&mut self, items: Vec<Metadata>) {
+        let items = items
+            .into_iter()
+            .map(|md| SimpleMetadata {
+                name: String::from(&md.name.unwrap()[self.prefix_len..]),
+                size: md.size.unwrap_or_default(),
+                updated: md
+                    .updated
+                    .map(|dt| dt.format("%d %b %T").to_string())
+                    .unwrap_or_default(),
+            })
+            .collect();
 
-//             let mut dir_name = String::new();
-//             for part in filename.split('/') {
-//                 dir_name.push_str(part);
+        self.items.push(items);
+    }
 
-//                 if !self.dirs.contains(&dir_name) {
-//                 }
-//             }
-//         }
-//     }
-// }
+    fn print(&self) {
+        let mut stdout = std::io::stdout();
+
+        let mut dirs = vec![String::new()];
+
+        while let Some(dir) = dirs.pop() {
+            if !dir.is_empty() {
+                writeln!(stdout, "\n{}:", &dir[..dir.len() - 1]).unwrap();
+            }
+
+            dirs.extend(self.print_dir(dir, &mut stdout));
+        }
+
+        drop(stdout);
+    }
+
+    fn print_dir(&self, dir: String, out: &mut std::io::Stdout) -> Vec<String> {
+        let mut new_dirs = Vec::new();
+
+        for set in &self.items {
+            for item in set {
+                if item.name.starts_with(&dir) {
+                    let scoped_name = &item.name[dir.len()..];
+
+                    match scoped_name.find('/') {
+                        Some(sep) => {
+                            let dir_name = &scoped_name[..=sep];
+                            if new_dirs
+                                .iter()
+                                .any(|d: &String| &d[dir.len()..] == dir_name)
+                            {
+                                continue;
+                            }
+
+                            match self.display {
+                                Display::Normal => writeln!(
+                                    out,
+                                    "{}",
+                                    Color::Blue.bold().paint(&dir_name[..dir_name.len() - 1])
+                                )
+                                .unwrap(),
+                                Display::Long => writeln!(
+                                    out,
+                                    "    {} {} {} {}",
+                                    Color::White.dimmed().paint("-"),
+                                    Color::White.dimmed().paint("  -"),
+                                    Color::White.dimmed().paint("-- --- --:--:--"),
+                                    Color::Blue.bold().paint(&dir_name[..dir_name.len() - 1]),
+                                )
+                                .unwrap(),
+                            }
+
+                            new_dirs.push(format!("{}{}", dir, dir_name));
+                        }
+                        None => match self.display {
+                            Display::Normal => {
+                                writeln!(out, "{}", Color::White.paint(scoped_name)).unwrap()
+                            }
+                            Display::Long => {
+                                use number_prefix::{
+                                    NumberPrefix, PrefixNames, Prefixed, Standalone,
+                                };
+
+                                let size_str = match NumberPrefix::decimal(item.size as f64) {
+                                    Standalone(b) => b.to_string(),
+                                    Prefixed(p, n) => {
+                                        if n < 10f64 {
+                                            format!("{:.1}{}", n, p.symbol())
+                                        } else {
+                                            format!("{:.0}{}", n, p.symbol())
+                                        }
+                                    }
+                                };
+
+                                writeln!(
+                                    out,
+                                    " {}{} {} {} {}",
+                                    if size_str.len() < 4 { " " } else { "" },
+                                    Color::Green.paint(size_str),
+                                    Color::Yellow.paint("gcs"),
+                                    Color::Blue.paint(&item.updated),
+                                    Color::White.paint(scoped_name),
+                                )
+                                .unwrap();
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        // The directories act a queue, so reverse them so they are sorted correctly
+        new_dirs.reverse();
+        new_dirs
+    }
+}
