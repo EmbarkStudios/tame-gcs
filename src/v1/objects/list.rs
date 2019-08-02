@@ -58,7 +58,14 @@ pub struct ListOptional<'a> {
 }
 
 pub struct ListResponse {
+    /// The list of objects matching the query
     pub objects: Vec<super::Metadata>,
+    /// The list of prefixes of objects matching-but-not-listed up to
+    /// and including the requested delimiter.
+    pub prefixes: Vec<String>,
+    /// The continuation token, included only if there are more items to return.
+    /// Provide this value as the page_token of a subsequent request in order
+    /// to return the next page of results.
     pub page_token: Option<String>,
 }
 
@@ -75,8 +82,11 @@ where
         let (_parts, body) = response.into_parts();
 
         #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase")]
         struct RawListResponse {
             next_page_token: Option<String>,
+            #[serde(default)]
+            prefixes: Vec<String>,
             // This field won't be present if the list doesn't actually
             // return any items
             #[serde(default)]
@@ -87,6 +97,7 @@ where
 
         Ok(Self {
             objects: res.items,
+            prefixes: res.prefixes,
             page_token: res.next_page_token,
         })
     }
@@ -102,7 +113,7 @@ impl super::Object {
         bucket: &BucketName<'_>,
         optional: Option<ListOptional<'_>>,
     ) -> Result<http::Request<std::io::Empty>, Error> {
-        let mut uri = format!("https://www.googleapis.com/storage/v1/b/{}/o", bucket,);
+        let mut uri = format!("https://www.googleapis.com/storage/v1/b/{}/o", bucket);
 
         let query = optional.unwrap_or_default();
         let query_params = serde_urlencoded::to_string(query)?;
