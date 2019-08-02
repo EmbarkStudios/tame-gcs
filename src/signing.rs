@@ -1,3 +1,5 @@
+//! Helper facilities for calculating content digests and signing data
+
 use crate::error::Error;
 use std::fmt;
 

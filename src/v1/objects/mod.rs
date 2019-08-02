@@ -1,3 +1,5 @@
+//! Types and APIs for interacting with GCS [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
+
 use crate::common::StorageClass;
 use std::collections::BTreeMap;
 
@@ -31,6 +33,8 @@ pub use get::*;
 pub use insert::*;
 pub use list::*;
 
+/// Helper struct used to collate all of the operations available for
+/// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
 pub struct Object;
 
 /// [Metadata](https://cloud.google.com/storage/docs/json_api/v1/objects#resource)

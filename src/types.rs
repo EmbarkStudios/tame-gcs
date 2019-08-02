@@ -1,3 +1,5 @@
+//! Helper types for working with GCS
+
 use crate::error::Error;
 use std::{borrow::Cow, convert::TryFrom};
 
@@ -249,6 +251,8 @@ where
     }
 }
 
+/// A concrete object id which contains a valid bucket and object name
+/// which fully specifies an object
 pub struct ObjectId<'a> {
     bucket: BucketName<'a>,
     object: ObjectName<'a>,
