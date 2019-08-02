@@ -5,6 +5,7 @@ use structopt::StructOpt;
 
 mod cat;
 mod cp;
+mod ls;
 #[cfg(feature = "signing")]
 mod signurl;
 mod stat;
@@ -18,6 +19,8 @@ enum Command {
     /// Copy files and objects
     #[structopt(name = "cp")]
     Cp(cp::Args),
+    #[structopt(name = "ls")]
+    Ls(ls::Args),
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
@@ -61,6 +64,7 @@ fn real_main() -> Result<(), Error> {
     match args.cmd {
         Command::Cat(args) => cat::cmd(&ctx, args),
         Command::Cp(args) => cp::cmd(&ctx, args),
+        Command::Ls(args) => ls::cmd(&ctx, args),
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args),
         Command::Stat(args) => stat::cmd(&ctx, args),
