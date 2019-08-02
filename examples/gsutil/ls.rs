@@ -24,7 +24,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
 
     let delimiter = if args.recurse { None } else { Some("/") };
     let mut prefix = oid.object().map(|on| on.as_ref()).unwrap_or("").to_owned();
-    if !prefix.is_empty() && !prefix.ends_with("/") {
+    if !prefix.is_empty() && !prefix.ends_with('/') {
         prefix.push('/')
     }
 
