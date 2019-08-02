@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},
-    objects::{self, DeleteObjectOptional, InsertObjectOptional, Object},
+    objects::{self, DeleteObjectOptional, InsertObjectOptional, Metadata, Object},
     BucketName, ObjectId, ObjectName,
 };
 
@@ -189,4 +189,112 @@ fn parses_empty_list_response() {
 
     assert_eq!(0, list_response.objects.len());
     assert!(list_response.page_token.is_none());
+}
+
+const TEST_CONTENT: &str = include_str!("../CODE_OF_CONDUCT.md");
+
+#[test]
+fn insert_multipart_text() {
+    let body = TEST_CONTENT;
+
+    let metadata = Metadata {
+        name: Some("good_name".to_owned()),
+        content_type: Some("text/plain".to_owned()),
+        metadata: Some(
+            ["akey"]
+                .iter()
+                .map(|k| (String::from(*k), format!("{}value", k)))
+                .collect(),
+        ),
+        ..Default::default()
+    };
+
+    let insert_req = Object::insert_multipart(
+        &BucketName::non_validated("bucket"),
+        std::io::Cursor::new(body),
+        body.len() as u64,
+        &metadata,
+        None,
+    )
+    .unwrap();
+
+    // Example request from https://cloud.google.com/storage/docs/json_api/v1/how-tos/multipart-upload
+    // POST https://www.googleapis.com/upload/storage/v1/b/myBucket/o?uploadType=multipart HTTP/1.1
+    // Authorization: Bearer [YOUR_AUTH_TOKEN]
+    // Content-Type: multipart/related; boundary=foo_bar_baz
+    // Content-Length: [NUMBER_OF_BYTES_IN_ENTIRE_REQUEST_BODY]
+
+    // --foo_bar_baz
+    // Content-Type: application/json; charset=UTF-8
+
+    // {
+    // "name": "myObject"
+    // }
+
+    // --foo_bar_baz
+    // Content-Type: image/jpeg
+
+    // [JPEG_DATA]
+    // --foo_bar_baz--
+
+    // We use `tame_gcs` as the boundary
+
+    let expected_body = format!(
+        "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
+        serde_json::to_string(&metadata).unwrap(),
+        body,
+        b = "tame_gcs"
+    );
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
+        .header(http::header::CONTENT_LENGTH, 3549)
+        .body(std::io::Cursor::new(expected_body))
+        .unwrap();
+
+    util::requests_read_eq(insert_req, expected);
+}
+
+#[test]
+fn multipart_read_paranoid() {
+    // Ensure the Read implementation for Multipart works even with
+    // a (hopefully) unrealistic case of copying 1 byte at a time
+    let body = TEST_CONTENT;
+
+    let metadata = Metadata {
+        name: Some("a-really-descriptive-name".to_owned()),
+        content_type: Some("text/plain".to_owned()),
+        metadata: Some(
+            ["key_one", "key_two", "should_sort_first"]
+                .iter()
+                .map(|k| (String::from(*k), format!("{}value", k)))
+                .collect(),
+        ),
+        ..Default::default()
+    };
+
+    let mut mp =
+        objects::Multipart::wrap(std::io::Cursor::new(body), body.len() as u64, &metadata).unwrap();
+
+    let expected_body = format!(
+        "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
+        serde_json::to_string(&metadata).unwrap(),
+        body,
+        b = "tame_gcs"
+    );
+
+    use std::io::Read;
+    let mut actual_body = Vec::with_capacity(expected_body.len());
+    loop {
+        let mut buf = [0; 1];
+        if mp.read(&mut buf).unwrap() == 0 {
+            break;
+        }
+
+        actual_body.push(buf[0]);
+    }
+
+    util::cmp_strings(&expected_body, &String::from_utf8_lossy(&actual_body));
 }

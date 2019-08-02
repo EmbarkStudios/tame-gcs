@@ -27,7 +27,7 @@ pub struct GetObjectOptional<'a> {
 }
 
 pub struct GetObjectResponse {
-    pub metadata: super::ObjectMetadata,
+    pub metadata: super::Metadata,
 }
 
 impl ApiResponse<&[u8]> for GetObjectResponse {}
@@ -41,7 +41,7 @@ where
 
     fn try_from(response: http::Response<B>) -> Result<Self, Self::Error> {
         let (_parts, body) = response.into_parts();
-        let metadata: super::ObjectMetadata = serde_json::from_slice(body.as_ref())?;
+        let metadata: super::Metadata = serde_json::from_slice(body.as_ref())?;
         Ok(Self { metadata })
     }
 }

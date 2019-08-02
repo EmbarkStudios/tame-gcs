@@ -149,16 +149,37 @@ where
     Ok(R::try_from_parts(response)?)
 }
 
+pub struct GsUrl {
+    bucket_name: tame_gcs::BucketName<'static>,
+    obj_name: Option<tame_gcs::ObjectName<'static>>,
+}
+
+impl GsUrl {
+    pub fn bucket(&self) -> &tame_gcs::BucketName<'_> {
+        &self.bucket_name
+    }
+
+    pub fn object(&self) -> Option<&tame_gcs::ObjectName<'_>> {
+        self.obj_name.as_ref()
+    }
+}
+
 /// Converts a `gs://<bucket_name>/<object_name>` url into an regular object identifer
-pub fn gs_url_to_object_id(url: &url::Url) -> Result<tame_gcs::ObjectId<'_>, Error> {
+pub fn gs_url_to_object_id(url: &url::Url) -> Result<GsUrl, Error> {
+    use std::convert::TryFrom;
+
     match url.scheme() {
         "gs" => {
             let bucket_name = url
                 .host_str()
                 .ok_or_else(|| format_err!("no bucket specified"))?;
+            // Skip first /
             let object_name = &url.path()[1..];
 
-            Ok(tame_gcs::ObjectId::new(bucket_name, object_name)?)
+            Ok(GsUrl {
+                bucket_name: tame_gcs::BucketName::try_from(String::from(bucket_name))?,
+                obj_name: tame_gcs::ObjectName::try_from(String::from(object_name)).ok(),
+            })
         }
         scheme => Err(failure::format_err!("invalid url scheme: {}", scheme)),
     }

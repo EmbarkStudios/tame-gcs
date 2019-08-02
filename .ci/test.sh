@@ -42,6 +42,6 @@ travis_fold end "cargo.build"
 # Run the actual tests
 travis_fold start "cargo.test"
     travis_time_start
-        cargo test --target $TARGET
+        cargo test --target $TARGET --all-features
     travis_time_finish
 travis_fold end "cargo.test"

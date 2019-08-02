@@ -1,5 +1,8 @@
+//! Error facilities
+
 use std::fmt;
 
+/// Core error type for all errors possible from tame-gcs
 #[derive(Fail, Debug, PartialEq)]
 pub enum Error {
     #[fail(display = "Expected {}-{} characters, found {}", min, max, len)]

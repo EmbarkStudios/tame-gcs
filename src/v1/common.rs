@@ -1,3 +1,7 @@
+//! Types that are commone between different operations.
+
+use std::fmt;
+
 #[allow(clippy::trivially_copy_pass_by_ref)]
 fn pretty_on(pretty_print: &bool) -> bool {
     *pretty_print
@@ -45,6 +49,8 @@ impl<'a> Default for StandardQueryParameters<'a> {
     }
 }
 
+/// Contains common conditionals that determite whether an operation
+/// will actually proceed or not
 #[derive(Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Conditionals {
@@ -70,7 +76,7 @@ pub struct Conditionals {
 }
 
 /// [Storage classes](https://cloud.google.com/storage/docs/storage-classes)
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum StorageClass {
     /// [Multi-Regional Storage](https://cloud.google.com/storage/docs/storage-classes#multi-regional)
@@ -108,6 +114,17 @@ pub enum StorageClass {
     DurableReducedAvailability,
 }
 
+impl fmt::Display for StorageClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+/// A [predefined or "canned" ACL](https://cloud.google.com/storage/docs/access-control/lists#predefined-acl)
+/// is an alias for a set of specific ACL entries that you can use to quickly apply many ACL entries at once
+/// to a bucket or object. Predefined ACLs are defined for common scenarios such as revoking all access
+/// permissions except for owner permission (predefined ACL private), or making an object publicly readable
+/// (predefined ACL publicRead).
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PredefinedAcl {
@@ -125,6 +142,7 @@ pub enum PredefinedAcl {
     PublicRead,
 }
 
+/// Set of properties to return. Defaults to NoAcl.
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Projection {
@@ -132,4 +150,10 @@ pub enum Projection {
     Full,
     /// Omit the owner, acl property.
     NoAcl,
+}
+
+impl Default for Projection {
+    fn default() -> Self {
+        Projection::NoAcl
+    }
 }

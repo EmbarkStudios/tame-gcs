@@ -4,8 +4,11 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 mod cat;
+mod cp;
+mod ls;
 #[cfg(feature = "signing")]
 mod signurl;
+mod stat;
 mod util;
 
 #[derive(StructOpt)]
@@ -13,9 +16,16 @@ enum Command {
     /// Concatenate object content to stdout
     #[structopt(name = "cat")]
     Cat(cat::Args),
+    /// Copy files and objects
+    #[structopt(name = "cp")]
+    Cp(cp::Args),
+    #[structopt(name = "ls")]
+    Ls(ls::Args),
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
+    #[structopt(name = "stat")]
+    Stat(stat::Args),
 }
 
 #[derive(StructOpt)]
@@ -47,14 +57,17 @@ fn real_main() -> Result<(), Error> {
 
     let ctx = util::RequestContext {
         client,
-        cred_path: cred_path,
+        cred_path,
         auth: std::sync::Arc::new(svc_account_access),
     };
 
     match args.cmd {
         Command::Cat(args) => cat::cmd(&ctx, args),
+        Command::Cp(args) => cp::cmd(&ctx, args),
+        Command::Ls(args) => ls::cmd(&ctx, args),
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args),
+        Command::Stat(args) => stat::cmd(&ctx, args),
     }
 }
 

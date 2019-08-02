@@ -21,7 +21,14 @@ to work with, if you don't care about what HTTP clients they use.
 
 ## Examples
 
-Coming soon, I promise!
+The examples directory includes a simplified version of [gsutil](https://cloud.google.com/storage/docs/gsutil). This
+is a work in progress that gives examples of using the different operations that are currently supported in this crate.
+
+* [cat](examples/gsutil/cat.rs) - Shows an example [Object::download](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.download)
+* [cp](examples/gsutil/cp.rs) - Shows an example of [Object::download](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.download) as well as [Object::insert_multipart](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.insert_multipart)
+* [ls](examples/gsutil/ls.rs) - Shows an example of [Object::list](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.list)
+* [signurl](examples/gsutil/signurl.rs) - Shows an example of [UrlSigner](https://docs.rs/tame-gcs/latest/tame_gcs/signed_url/struct.UrlSigner.html)
+* [stat](examples/gsutil/stat.rs) - Shows an example of [Object::get](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.get)
 
 ## Contributing
 

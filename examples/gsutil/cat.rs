@@ -28,7 +28,14 @@ last numbytes of the object."
 pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
-    let mut download_req = Object::download(&oid, None)?;
+    let mut download_req = Object::download(
+        &(
+            oid.bucket(),
+            oid.object()
+                .ok_or_else(|| failure::format_err!("invalid object name specified"))?,
+        ),
+        None,
+    )?;
 
     if let Some(range) = args.range {
         // The format specified in the arguments exactly matches those HTTP range

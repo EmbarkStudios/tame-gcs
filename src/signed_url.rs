@@ -1,3 +1,5 @@
+//! Facilities for [signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls),
+
 use crate::{error::Error, signing, types::ObjectIdentifier};
 use std::borrow::Cow;
 use url::{percent_encoding as perc_enc, Url};
@@ -5,7 +7,7 @@ use url::{percent_encoding as perc_enc, Url};
 /// A generator for [signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls),
 /// which can be used to grant temporary access to specific storage
 /// resources even if the client making the request is not otherwise
-/// logged in or normally has access to the storage resources in question.
+/// logged in or normally able to access to the storage resources in question.
 ///
 /// This implements the [V4 signing process](https://cloud.google.com/storage/docs/access-control/signing-urls-manually)
 pub struct UrlSigner<D, S> {
@@ -258,6 +260,7 @@ where
     }
 }
 
+/// Optional parameters that can be used to tweak url signing
 pub struct SignedUrlOptional<'a> {
     /// The HTTP method for the request to sign. Defaults to 'GET'.
     pub method: http::Method,

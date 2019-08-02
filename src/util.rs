@@ -1,3 +1,5 @@
+#![doc(hidden)]
+
 pub(crate) fn to_hex<'a>(input: &[u8], output: &'a mut [u8]) -> Option<&'a str> {
     use std::str;
 
