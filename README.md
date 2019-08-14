@@ -1,4 +1,4 @@
-# tame-gcs
+# 📂 tame-gcs
 
 [![Build Status](https://travis-ci.com/EmbarkStudios/tame-gcs.svg?branch=master)](https://travis-ci.com/EmbarkStudios/tame-gcs)
 [![Crates.io](https://img.shields.io/crates/v/tame-gcs.svg)](https://crates.io/crates/tame-gcs)
