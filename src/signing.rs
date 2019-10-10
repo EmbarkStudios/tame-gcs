@@ -164,12 +164,8 @@ impl Signer for RingSigner {
         match algorithm {
             SigningAlgorithm::RsaSha256 => {
                 let key_pair = match key {
-                    Key::Pkcs8(key) => {
-                        ring::signature::RsaKeyPair::from_pkcs8(untrusted::Input::from(key))
-                    }
-                    Key::Der(key) => {
-                        ring::signature::RsaKeyPair::from_der(untrusted::Input::from(key))
-                    }
+                    Key::Pkcs8(key) => ring::signature::RsaKeyPair::from_pkcs8(key),
+                    Key::Der(key) => ring::signature::RsaKeyPair::from_der(key),
                     Key::Hmac(_) => {
                         return Err(Error::KeyRejected("HMAC cannot be used with RSA signing"))
                     }

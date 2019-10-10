@@ -6,7 +6,7 @@ use tame_gcs::objects::Object;
 pub(crate) struct Args {
     #[structopt(
         short,
-        raw(allow_hyphen_values = "true"),
+        allow_hyphen_values = true,
         long_help = "Causes gsutil to output just the specified byte range of the object.
 
 Ranges are can be of these forms:

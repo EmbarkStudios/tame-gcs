@@ -48,13 +48,14 @@ pub(crate) struct Args {
     #[structopt(
         short,
         default_value = "GET",
-        raw(possible_values = "&Method::variants()", case_insensitive = "true")
+        possible_values = &Method::variants(),
+        case_insensitive = true
     )]
     method: Method,
     #[structopt(
         short,
         default_value = "1h",
-        parse(try_from_str = "parse_duration"),
+        parse(try_from_str = parse_duration),
         long_help = "The duration that ths signed url will be valid for.
 
 Times may be specified with no suffix (default hours), or one of:
