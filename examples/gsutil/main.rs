@@ -43,8 +43,6 @@ struct Opts {
 fn real_main() -> Result<(), Error> {
     let args = Opts::from_args();
 
-    dotenv::dotenv()?;
-
     let cred_path = args
         .credentials
         .or_else(|| std::env::var_os("GOOGLE_APPLICATION_CREDENTIALS").map(PathBuf::from))

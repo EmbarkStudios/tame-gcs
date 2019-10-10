@@ -14,8 +14,6 @@ impl Input {
     fn new() -> Self {
         use std::env;
 
-        dotenv::dotenv().expect("loaded .env");
-
         let ret = Self {
             svc_account: signing::ServiceAccount::load_json_file(
                 env::var("TAME_GCS_TEST_SVC_ACCOUNT").expect("failed to get service account path"),
