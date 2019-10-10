@@ -52,7 +52,7 @@ reqwest = { version = "0.9.21", default-features = false, features = ["rustls-tl
 # Because it's good
 structopt = "0.3.2"
 # For doing actual authentication in examples
-tame-oauth = { version = "0.2.1", features = ["gcp"] }
+tame-oauth = { version = "0.3.0", features = ["gcp"] }
 
 [features]
 default = ["v1"]
