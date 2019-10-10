@@ -1,5 +1,5 @@
 use crate::util;
-use failure::{bail, Error, ResultExt};
+use anyhow::{anyhow, bail, Context, Error};
 use std::{convert::TryFrom, path::PathBuf};
 use structopt::StructOpt;
 use tame_gcs::objects::{self, Metadata, Object};
@@ -69,7 +69,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
                 src.file_name()
                     .as_ref()
                     .and_then(|os| os.to_str())
-                    .ok_or_else(|| failure::format_err!("can't turn file_name into string"))?
+                    .ok_or_else(|| anyhow!("can't turn file_name into string"))?
             );
             let insert_req = Object::insert_multipart(
                 dst.bucket(),
@@ -92,9 +92,8 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
             let dl_req = Object::download(
                 &(
                     src.bucket(),
-                    src.object().ok_or_else(|| {
-                        failure::format_err!("must provide a full object name to copy from")
-                    })?,
+                    src.object()
+                        .ok_or_else(|| anyhow!("must provide a full object name to copy from"))?,
                 ),
                 None,
             )?;

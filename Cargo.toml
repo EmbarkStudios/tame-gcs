@@ -25,7 +25,6 @@ doctest = false
 base64 = "0.10.1"
 bytes = "0.4.12"
 chrono = { version = "0.4.7", features = ["serde"] }
-failure = "0.1.5"
 http = "0.1.18"
 ring = { version = "0.14.6", optional = true }
 serde = { version = "1.0.98", features = ["derive"] }
@@ -34,15 +33,16 @@ serde_urlencoded = "0.5.5"
 untrusted = { version = "0.6.2", optional = true }
 url = "1.7.2"
 
+thiserror = "1.0.1"
 [dev-dependencies]
-# COLORS!
-ansi_term = "0.12.0"
+# Friendly error handling
+anyhow = "1.0.11"
 # Human friendly byte sizes
 number_prefix = "0.3.0"
 # Diff view of test failures
 difference = "2.0.0"
 # Use environment for arguments
-dotenv = "0.14.1"
+dotenv = { version = "0.15.0", git = "https://github.com/dotenv-rs/dotenv.git", rev = "cfed2b8" }
 # Because progress bars are fun
 indicatif = "0.11.0"
 # For doing actual requests in examples

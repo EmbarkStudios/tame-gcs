@@ -1,5 +1,5 @@
 use ansi_term::Color;
-use failure::{format_err, Error};
+use anyhow::Error;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -48,7 +48,7 @@ fn real_main() -> Result<(), Error> {
     let cred_path = args
         .credentials
         .or_else(|| std::env::var_os("GOOGLE_APPLICATION_CREDENTIALS").map(PathBuf::from))
-        .ok_or_else(|| format_err!("credentials not specified"))?;
+        .ok_or_else(|| anyhow::anyhow!("credentials not specified"))?;
 
     let client = reqwest::Client::builder().build()?;
     let svc_account_info =

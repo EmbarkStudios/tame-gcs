@@ -1,6 +1,6 @@
 use crate::util;
 use ansi_term::Color;
-use failure::Error;
+use anyhow::Error;
 use structopt::StructOpt;
 use tame_gcs::{
     common::StandardQueryParameters,

@@ -1,5 +1,4 @@
 use crate::util;
-use failure::Error;
 use structopt::StructOpt;
 use tame_gcs::objects::Object;
 
@@ -25,14 +24,14 @@ last numbytes of the object."
     url: url::Url,
 }
 
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
+pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let mut download_req = Object::download(
         &(
             oid.bucket(),
             oid.object()
-                .ok_or_else(|| failure::format_err!("invalid object name specified"))?,
+                .ok_or_else(|| anyhow::anyhow!("invalid object name specified"))?,
         ),
         None,
     )?;
