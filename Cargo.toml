@@ -10,11 +10,13 @@ homepage = "https://github.com/EmbarkStudios/tame-gcs"
 repository = "https://github.com/EmbarkStudios/tame-gcs"
 keywords = ["gcs", "tame", "sans-io", "storage", "gcp"]
 readme = "README.md"
-
 exclude = [
   # End users don't want the JSON schemas
   "src/v1/schema.json",
 ]
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 [lib]
 doctest = false
