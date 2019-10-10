@@ -34,3 +34,18 @@ pub fn get_content_length(headers: &http::HeaderMap) -> Option<usize> {
 pub(crate) fn if_false(v: &bool) -> bool {
     !v
 }
+
+pub(crate) const QUERY_ENCODE_SET: &percent_encoding::AsciiSet = &percent_encoding::CONTROLS
+    .add(b' ')
+    .add(b'"')
+    .add(b'#')
+    .add(b'<')
+    .add(b'>');
+
+pub(crate) const PATH_ENCODE_SET: &percent_encoding::AsciiSet = &QUERY_ENCODE_SET
+    .add(b'`')
+    .add(b'?')
+    .add(b'{')
+    .add(b'}')
+    .add(b'%')
+    .add(b'/');

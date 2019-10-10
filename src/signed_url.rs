@@ -1,8 +1,9 @@
 //! Facilities for [signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls),
 
 use crate::{error::Error, signing, types::ObjectIdentifier};
+use percent_encoding as perc_enc;
 use std::borrow::Cow;
-use url::{percent_encoding as perc_enc, Url};
+use url::Url;
 
 /// A generator for [signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls),
 /// which can be used to grant temporary access to specific storage
@@ -79,8 +80,8 @@ where
         // https://cloud.google.com/storage/docs/authentication/canonical-requests#about-resource-path
         let resource_path = format!(
             "/{}/{}",
-            perc_enc::percent_encode(id.bucket().as_ref(), perc_enc::PATH_SEGMENT_ENCODE_SET),
-            perc_enc::percent_encode(id.object().as_ref(), perc_enc::PATH_SEGMENT_ENCODE_SET),
+            perc_enc::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
+            perc_enc::percent_encode(id.object().as_ref(), crate::util::PATH_ENCODE_SET),
         );
 
         signed_url.set_path(&resource_path);

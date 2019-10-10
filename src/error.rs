@@ -3,77 +3,61 @@
 use std::fmt;
 
 /// Core error type for all errors possible from tame-gcs
-#[derive(Fail, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq)]
 pub enum Error {
-    #[fail(display = "Expected {}-{} characters, found {}", min, max, len)]
+    #[error("Expected {min}-{max} characters, found {len}")]
     InvalidCharacterCount { len: usize, min: usize, max: usize },
-    #[fail(display = "Expected {}-{} bytes, found {}", min, max, len)]
+    #[error("Expected {min}-{max} bytes, found {len}")]
     InvalidLength { len: usize, min: usize, max: usize },
-    #[fail(display = "Character '{}' @ {} is not allowed", _1, _0)]
+    #[error("Character '{1}' @ {0} is not allowed")]
     InvalidCharacter(usize, char),
-    #[fail(display = "Prefix {} is not allowed", _0)]
+    #[error("Prefix {0} is not allowed")]
     InvalidPrefix(&'static str),
-    #[fail(display = "Sequence {} is not allowed", _0)]
+    #[error("Sequence {0} is not allowed")]
     InvalidSequence(&'static str),
-    #[fail(display = "{}", _0)]
-    Http(#[fail(cause)] HttpError),
-    #[fail(display = "{}", _0)]
-    HttpStatus(#[fail(cause)] HttpStatusError),
-    #[fail(display = "An HTTP response didn't have a valid Content-Length")]
+    #[error("HTTP error")]
+    Http(#[source] HttpError),
+    #[error("HTTP status")]
+    HttpStatus(#[source] HttpStatusError),
+    #[error("An HTTP response didn't have a valid Content-Length")]
     UnknownContentLength,
-    #[fail(display = "GCS API error: {}", _0)]
-    API(#[fail(cause)] ApiError),
-    #[fail(display = "JSON error: {}", _0)]
-    Json(#[fail(cause)] JsonError),
-    #[fail(display = "Response body doesn't contain enough data")]
+    #[error("GCS API error")]
+    API(#[source] ApiError),
+    #[error("JSON error")]
+    Json(#[source] JsonError),
+    #[error("Response body doesn't contain enough data")]
     InsufficientData,
-    #[fail(display = "Key rejected: {}", _0)]
+    #[error("Key rejected: {0}")]
     KeyRejected(&'static str),
-    #[fail(display = "An error occurred during signing")]
+    #[error("An error occurred during signing")]
     SigningError,
-    #[fail(
-        display = "An expiration duration was too long: requested = {}, max = {}",
-        requested, max
-    )]
+    #[error("An expiration duration was too long: requested = {requested}, max = {max}")]
     TooLongExpiration { requested: u64, max: u64 },
-    #[fail(display = "Failed to parse url {}", _0)]
-    UrlParse(url::ParseError),
-    #[fail(display = "Unable to stringize header value '{:?}'", _0)]
+    #[error("Failed to parse url")]
+    UrlParse(#[source] url::ParseError),
+    #[error("Unable to stringize header value '{0:?}'")]
     OpaqueHeaderValue(http::header::HeaderValue),
-    #[fail(display = "I/O error occurred: {}", _0)]
-    Io(#[fail(cause)] IoError),
-    #[fail(display = "Unable to decode base64: {}", _0)]
-    Base64Decode(base64::DecodeError),
-    #[fail(display = "Unable to url encode: {}", _0)]
-    UrlEncode(serde_urlencoded::ser::Error),
+    #[error("I/O error occurred")]
+    Io(#[source] IoError),
+    #[error("Unable to decode base64")]
+    Base64Decode(#[source] base64::DecodeError),
+    #[error("Unable to encode url")]
+    UrlEncode(#[source] serde_urlencoded::ser::Error),
 }
 
-#[derive(Debug)]
-pub struct HttpError(http::Error);
+#[derive(Debug, thiserror::Error)]
+pub struct HttpError(#[source] http::Error);
+
+impl fmt::Display for HttpError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 impl PartialEq for HttpError {
     fn eq(&self, _other: &Self) -> bool {
         // I feel really bad about this
         true
-    }
-}
-
-impl fmt::Display for HttpError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        std::error::Error::description(self).fmt(f)
-    }
-}
-
-impl std::error::Error for HttpError {
-    fn description(&self) -> &str {
-        self.0.description()
-    }
-
-    // Return any available cause from the inner error. Note the inner error is
-    // not itself the cause.
-    #[allow(deprecated)]
-    fn cause(&self) -> Option<&dyn std::error::Error> {
-        self.0.cause()
     }
 }
 
@@ -83,7 +67,7 @@ impl From<http::Error> for Error {
     }
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, thiserror::Error)]
 pub struct HttpStatusError(http::StatusCode);
 
 impl PartialEq for HttpStatusError {
@@ -104,8 +88,8 @@ impl From<http::StatusCode> for Error {
     }
 }
 
-#[derive(Debug, Fail)]
-pub struct IoError(std::io::Error);
+#[derive(Debug, thiserror::Error)]
+pub struct IoError(#[source] std::io::Error);
 
 impl PartialEq for IoError {
     fn eq(&self, other: &Self) -> bool {
@@ -125,31 +109,18 @@ impl From<std::io::Error> for Error {
     }
 }
 
-#[derive(Debug)]
-pub struct JsonError(pub(crate) serde_json::Error);
+#[derive(Debug, thiserror::Error)]
+pub struct JsonError(#[source] pub(crate) serde_json::Error);
+
+impl fmt::Display for JsonError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 impl PartialEq for JsonError {
     fn eq(&self, other: &Self) -> bool {
         self.0.classify() == other.0.classify()
-    }
-}
-
-impl fmt::Display for JsonError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        std::error::Error::description(self).fmt(f)
-    }
-}
-
-impl std::error::Error for JsonError {
-    fn description(&self) -> &str {
-        self.0.description()
-    }
-
-    // Return any available cause from the inner error. Note the inner error is
-    // not itself the cause.
-    #[allow(deprecated)]
-    fn cause(&self) -> Option<&dyn std::error::Error> {
-        self.0.cause()
     }
 }
 
@@ -172,7 +143,7 @@ pub struct ApiErrorInner {
     message: Option<String>,
 }
 
-#[derive(Debug, Fail, PartialEq, Deserialize)]
+#[derive(Debug, thiserror::Error, PartialEq, Deserialize)]
 pub struct ApiError {
     code: u16,
     message: String,

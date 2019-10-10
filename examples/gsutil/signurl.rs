@@ -1,5 +1,5 @@
 use crate::util;
-use failure::Error;
+use anyhow::{anyhow, Error};
 use structopt::{clap::arg_enum, StructOpt};
 use tame_gcs::{signed_url, signing};
 
@@ -36,7 +36,7 @@ fn parse_duration(src: &str) -> Result<std::time::Duration, Error> {
         "m" | "M" => Duration::from_secs(num * 60),
         "h" | "H" => Duration::from_secs(num * 60 * 60),
         "d" | "D" => Duration::from_secs(num * 60 * 60 * 24),
-        s => return Err(failure::format_err!("unknown duration suffix '{}'", s)),
+        s => return Err(anyhow!("unknown duration suffix '{}'", s)),
     };
 
     Ok(duration)
@@ -48,13 +48,14 @@ pub(crate) struct Args {
     #[structopt(
         short,
         default_value = "GET",
-        raw(possible_values = "&Method::variants()", case_insensitive = "true")
+        possible_values = &Method::variants(),
+        case_insensitive = true
     )]
     method: Method,
     #[structopt(
         short,
         default_value = "1h",
-        parse(try_from_str = "parse_duration"),
+        parse(try_from_str = parse_duration),
         long_help = "The duration that ths signed url will be valid for.
 
 Times may be specified with no suffix (default hours), or one of:
@@ -115,7 +116,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         &(
             oid.bucket(),
             oid.object()
-                .ok_or_else(|| failure::format_err!("must have a valid object name"))?,
+                .ok_or_else(|| anyhow!("must have a valid object name"))?,
         ),
         options,
     )?;

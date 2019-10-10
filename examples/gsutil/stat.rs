@@ -1,5 +1,5 @@
 use crate::util;
-use failure::Error;
+use anyhow::Error;
 use structopt::StructOpt;
 use tame_gcs::objects::Object;
 
@@ -16,7 +16,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         &(
             oid.bucket(),
             oid.object()
-                .ok_or_else(|| failure::format_err!("invalid object name specified"))?,
+                .ok_or_else(|| anyhow::anyhow!("invalid object name specified"))?,
         ),
         None,
     )?;

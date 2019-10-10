@@ -9,14 +9,8 @@ macro_rules! __make_obj_url {
     ($url:expr, $id:expr) => {{
         format!(
             $url,
-            url::percent_encoding::percent_encode(
-                $id.bucket().as_ref(),
-                url::percent_encoding::PATH_SEGMENT_ENCODE_SET
-            ),
-            url::percent_encoding::percent_encode(
-                $id.object().as_ref(),
-                url::percent_encoding::PATH_SEGMENT_ENCODE_SET
-            )
+            percent_encoding::percent_encode($id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
+            percent_encoding::percent_encode($id.object().as_ref(), crate::util::PATH_ENCODE_SET)
         )
     }};
 }

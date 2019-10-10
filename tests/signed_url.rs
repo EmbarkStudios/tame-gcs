@@ -14,8 +14,6 @@ impl Input {
     fn new() -> Self {
         use std::env;
 
-        dotenv::dotenv().expect("loaded .env");
-
         let ret = Self {
             svc_account: signing::ServiceAccount::load_json_file(
                 env::var("TAME_GCS_TEST_SVC_ACCOUNT").expect("failed to get service account path"),
@@ -40,6 +38,10 @@ impl Input {
     }
 }
 
+fn url_of_sadness(u: url::Url) -> reqwest::Url {
+    reqwest::Url::parse(u.as_str()).unwrap()
+}
+
 #[test]
 #[ignore]
 fn download_object() {
@@ -61,7 +63,7 @@ fn download_object() {
     let mut body = Vec::with_capacity(1024 * 1024);
 
     let mut response = Client::new()
-        .get(signed)
+        .get(url_of_sadness(signed))
         .send()
         .expect("sent request")
         .error_for_status()
@@ -92,7 +94,10 @@ fn gets_failure_responses_for_expired_urls() {
 
     std::thread::sleep(std::time::Duration::from_millis(1500));
 
-    let response = Client::new().get(signed).send().expect("sent request");
+    let response = Client::new()
+        .get(url_of_sadness(signed))
+        .send()
+        .expect("sent request");
 
     // We should get a failure response when trying to access a resource past its expiration
     assert_eq!(response.status(), 400);

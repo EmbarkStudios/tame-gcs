@@ -254,14 +254,8 @@ impl super::Object {
     {
         let mut uri = format!(
             "https://www.googleapis.com/upload/storage/v1/b/{}/o?name={}&uploadType=media",
-            url::percent_encoding::percent_encode(
-                id.bucket().as_ref(),
-                url::percent_encoding::PATH_SEGMENT_ENCODE_SET,
-            ),
-            url::percent_encoding::percent_encode(
-                id.object().as_ref(),
-                url::percent_encoding::QUERY_ENCODE_SET,
-            ),
+            percent_encoding::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET,),
+            percent_encoding::percent_encode(id.object().as_ref(), crate::util::QUERY_ENCODE_SET,),
         );
 
         let query = optional.unwrap_or_default();
@@ -331,10 +325,7 @@ impl super::Object {
 
         let mut uri = format!(
             "https://www.googleapis.com/upload/storage/v1/b/{}/o?uploadType=multipart",
-            url::percent_encoding::percent_encode(
-                bucket.as_ref(),
-                url::percent_encoding::PATH_SEGMENT_ENCODE_SET,
-            ),
+            percent_encoding::percent_encode(bucket.as_ref(), crate::util::PATH_ENCODE_SET,),
         );
 
         let query = optional.unwrap_or_default();

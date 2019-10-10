@@ -1,4 +1,4 @@
-use failure::{format_err, Error, ResultExt};
+use anyhow::{anyhow, Context, Error};
 use std::{convert::TryInto, sync::Arc};
 use tame_oauth::gcp as oauth;
 
@@ -63,7 +63,7 @@ fn convert_response(mut res: reqwest::Response) -> Result<http::Response<bytes::
 
     let headers = builder
         .headers_mut()
-        .ok_or_else(|| format_err!("failed to convert response headers"))?;
+        .ok_or_else(|| anyhow!("failed to convert response headers"))?;
 
     headers.extend(
         res.headers()
@@ -172,7 +172,7 @@ pub fn gs_url_to_object_id(url: &url::Url) -> Result<GsUrl, Error> {
         "gs" => {
             let bucket_name = url
                 .host_str()
-                .ok_or_else(|| format_err!("no bucket specified"))?;
+                .ok_or_else(|| anyhow!("no bucket specified"))?;
             // Skip first /
             let object_name = &url.path()[1..];
 
@@ -181,6 +181,6 @@ pub fn gs_url_to_object_id(url: &url::Url) -> Result<GsUrl, Error> {
                 obj_name: tame_gcs::ObjectName::try_from(String::from(object_name)).ok(),
             })
         }
-        scheme => Err(failure::format_err!("invalid url scheme: {}", scheme)),
+        scheme => Err(anyhow!("invalid url scheme: {}", scheme)),
     }
 }
