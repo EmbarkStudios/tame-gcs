@@ -39,8 +39,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@profiles
         with:
+          profile: minimal
           toolchain: stable
           override: true
       - name: cargo fetch
