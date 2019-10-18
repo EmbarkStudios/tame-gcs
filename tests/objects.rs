@@ -200,6 +200,7 @@ fn insert_multipart_text() {
     let metadata = Metadata {
         name: Some("good_name".to_owned()),
         content_type: Some("text/plain".to_owned()),
+        content_disposition: Some("attachment; filename=\"good name.jpg\"".to_owned()),
         metadata: Some(
             ["akey"]
                 .iter()
@@ -250,7 +251,7 @@ fn insert_multipart_text() {
         .method(http::Method::POST)
         .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
-        .header(http::header::CONTENT_LENGTH, 3549)
+        .header(http::header::CONTENT_LENGTH, 3611)
         .body(std::io::Cursor::new(expected_body))
         .unwrap();
 
