@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.5.1] - 2019-10-18
 ### Added
 - Added `content_disposition` to `objects::Metadata`
 
@@ -70,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial add of `tame-gcs`
 
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.5.1...HEAD
+[0.5.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.3.4...0.4.0
