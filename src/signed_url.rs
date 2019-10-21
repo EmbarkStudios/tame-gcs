@@ -39,7 +39,7 @@ where
         Self { digester, signer }
     }
 
-    /// Generates a new signed url for the specified resource, using a key\
+    /// Generates a new signed url for the specified resource, using a key
     /// provider. Note that this operation is entirely local, so though this
     /// may succeed in generating a url, the actual operation using it may fail
     /// if the account used to sign the URL does not have sufficient permissions
