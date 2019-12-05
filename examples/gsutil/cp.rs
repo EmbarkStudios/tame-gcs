@@ -77,6 +77,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
                 src_len,
                 &Metadata {
                     name: Some(obj_name),
+                    content_encoding: Some("identity".to_owned()),
                     ..Default::default()
                 },
                 None,
