@@ -64,6 +64,9 @@ pub struct Metadata {
     /// `Content-Disposition` of the object data. **writable**
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_disposition: Option<String>,
+    /// `Content-Encoding` of the object data. **writable**
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_encoding: Option<String>,
     /// The creation time of the object in RFC 3339 format.
     #[serde(skip_serializing)]
     pub time_created: Option<chrono::DateTime<chrono::Utc>>,

@@ -39,6 +39,7 @@ fn insert_json_content() {
         11,
         Some(InsertObjectOptional {
             content_type: Some("application/json"),
+            content_encoding: Some("identity"),
             ..Default::default()
         }),
     )
@@ -46,7 +47,7 @@ fn insert_json_content() {
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=json&uploadType=media&prettyPrint=false")
+        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=json&uploadType=media&prettyPrint=false&contentEncoding=identity")
         .header(http::header::CONTENT_TYPE, "application/json")
         .header(http::header::CONTENT_LENGTH, 11)
         .body(r#"{"data":23}"#)
@@ -200,6 +201,7 @@ fn insert_multipart_text() {
     let metadata = Metadata {
         name: Some("good_name".to_owned()),
         content_type: Some("text/plain".to_owned()),
+        content_encoding: Some("gzip".to_owned()),
         content_disposition: Some("attachment; filename=\"good name.jpg\"".to_owned()),
         metadata: Some(
             ["akey"]
@@ -251,7 +253,7 @@ fn insert_multipart_text() {
         .method(http::Method::POST)
         .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
-        .header(http::header::CONTENT_LENGTH, 3611)
+        .header(http::header::CONTENT_LENGTH, 3636)
         .body(std::io::Cursor::new(expected_body))
         .unwrap();
 
@@ -267,6 +269,7 @@ fn multipart_read_paranoid() {
     let metadata = Metadata {
         name: Some("a-really-descriptive-name".to_owned()),
         content_type: Some("text/plain".to_owned()),
+        content_encoding: Some("deflate".to_owned()),
         metadata: Some(
             ["key_one", "key_two", "should_sort_first"]
                 .iter()
