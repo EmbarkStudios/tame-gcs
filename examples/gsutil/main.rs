@@ -6,6 +6,7 @@ use structopt::StructOpt;
 mod cat;
 mod cp;
 mod ls;
+mod rm;
 #[cfg(feature = "signing")]
 mod signurl;
 mod stat;
@@ -21,6 +22,8 @@ enum Command {
     Cp(cp::Args),
     #[structopt(name = "ls")]
     Ls(ls::Args),
+    #[structopt(name = "rm")]
+    Rm(rm::Args),
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
@@ -63,6 +66,7 @@ fn real_main() -> Result<(), Error> {
         Command::Cat(args) => cat::cmd(&ctx, args),
         Command::Cp(args) => cp::cmd(&ctx, args),
         Command::Ls(args) => ls::cmd(&ctx, args),
+        Command::Rm(args) => rm::cmd(&ctx, args),
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args),
         Command::Stat(args) => stat::cmd(&ctx, args),
@@ -73,7 +77,13 @@ fn main() {
     match real_main() {
         Ok(_) => {}
         Err(e) => {
-            eprintln!("{}", Color::Red.paint(format!("{}", e)));
+            // let mut e = Some(e.as_ref() as &dyn std::error::Error);
+            // while let Some(err) = e {
+            //     eprintln!("{}", Color::Red.paint(format!("{:?}", err)));
+            //     e = err.source();
+            // }
+
+            eprintln!("{}", Color::Red.paint(format!("{:?}", e)));
             std::process::exit(1);
         }
     }
