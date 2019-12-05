@@ -22,9 +22,9 @@ maintenance = { status = "actively-developed" }
 doctest = false
 
 [dependencies]
-base64 = "0.10.1"
+base64 = "0.11.0"
 bytes = "0.4.12"
-chrono = { version = "0.4.7", features = ["serde"] }
+chrono = { version = "0.4.10", features = ["serde"] }
 http = "0.1.18"
 percent-encoding = "2.1.0"
 ring = { version = "0.16.9", optional = true }
@@ -44,13 +44,13 @@ number_prefix = "0.3.0"
 # Diff view of test failures
 difference = "2.0.0"
 # Because progress bars are fun
-indicatif = "0.12.0"
+indicatif = "0.13.0"
 # For doing actual requests in examples
 reqwest = { version = "0.9.21", default-features = false, features = ["rustls-tls"] }
 # Because it's good
 structopt = "0.3.2"
 # For doing actual authentication in examples
-tame-oauth = { version = "0.3.0", features = ["gcp"] }
+tame-oauth = { version = "0.3.1", features = ["gcp"] }
 
 [features]
 default = ["v1"]
