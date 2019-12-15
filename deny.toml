@@ -5,7 +5,7 @@ deny = [
     { name = "openssl-sys" },
 ]
 skip-tree = [
-    { name = "reqwest", version = "=0.9.22" },
+    { name = "reqwest", version = "=0.9" },
 ]
 
 [licenses]
