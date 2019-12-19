@@ -58,10 +58,10 @@ impl std::ops::Deref for DownloadObjectResponse {
 
 impl io::Read for DownloadObjectResponse {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        use bytes::{Buf, IntoBuf};
+        use bytes::Buf;
 
         let buf_len = std::cmp::min(self.buffer.len(), buf.len());
-        let mut slice = self.buffer.split_to(buf_len).into_buf();
+        let mut slice = self.buffer.split_to(buf_len).to_bytes();
         slice.copy_to_slice(&mut buf[..buf_len]);
 
         Ok(buf_len)
