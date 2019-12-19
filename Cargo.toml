@@ -25,7 +25,7 @@ doctest = false
 base64 = "0.11.0"
 bytes = "0.4.12"
 chrono = { version = "0.4.10", features = ["serde"] }
-http = "0.1.18"
+http = "0.2.0"
 percent-encoding = "2.1.0"
 ring = { version = "0.16.9", optional = true }
 serde = { version = "1.0.101", features = ["derive"] }
@@ -46,11 +46,11 @@ difference = "2.0.0"
 # Because progress bars are fun
 indicatif = "0.13.0"
 # For doing actual requests in examples
-reqwest = { version = "0.9.21", default-features = false, features = ["rustls-tls"] }
+reqwest = { git = "https://github.com/seanmonstar/reqwest.git", rev = "18fd9a6", default-features = false, features = [ "rustls-tls", "blocking" ] }
 # Because it's good
 structopt = "0.3.2"
 # For doing actual authentication in examples
-tame-oauth = { version = "0.3.1", features = ["gcp"] }
+tame-oauth = { git = "https://github.com/EmbarkStudios/tame-oauth.git", rev = "6c34d18", features = ["gcp"] }
 
 [features]
 default = ["v1"]

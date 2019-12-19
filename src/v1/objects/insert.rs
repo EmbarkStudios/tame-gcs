@@ -260,19 +260,17 @@ impl super::Object {
 
         let query = optional.unwrap_or_default();
 
-        let mut req_builder = http::Request::builder();
-
-        req_builder.header(
-            http::header::CONTENT_TYPE,
-            http::header::HeaderValue::from_str(
-                query
-                    .content_type
-                    .unwrap_or_else(|| "application/octet-stream"),
+        let req_builder = http::Request::builder()
+            .header(
+                http::header::CONTENT_TYPE,
+                http::header::HeaderValue::from_str(
+                    query
+                        .content_type
+                        .unwrap_or_else(|| "application/octet-stream"),
+                )
+                .map_err(http::Error::from)?,
             )
-            .map_err(http::Error::from)?,
-        );
-
-        req_builder.header(http::header::CONTENT_LENGTH, length);
+            .header(http::header::CONTENT_LENGTH, length);
 
         let query_params = serde_urlencoded::to_string(query)?;
         if !query_params.is_empty() {
@@ -330,16 +328,14 @@ impl super::Object {
 
         let query = optional.unwrap_or_default();
 
-        let mut req_builder = http::Request::builder();
-
-        req_builder.header(
-            http::header::CONTENT_TYPE,
-            http::header::HeaderValue::from_static("multipart/related; boundary=tame_gcs"),
-        );
-
         let multipart = Multipart::wrap(content, length, metadata)?;
 
-        req_builder.header(http::header::CONTENT_LENGTH, multipart.total_len());
+        let req_builder = http::Request::builder()
+            .header(
+                http::header::CONTENT_TYPE,
+                http::header::HeaderValue::from_static("multipart/related; boundary=tame_gcs"),
+            )
+            .header(http::header::CONTENT_LENGTH, multipart.total_len());
 
         let query_params = serde_urlencoded::to_string(query)?;
         if !query_params.is_empty() {

@@ -71,7 +71,7 @@ impl super::Object {
             uri.push_str(&query_params);
         }
 
-        let mut req_builder = http::Request::builder();
+        let req_builder = http::Request::builder();
 
         Ok(req_builder.method("GET").uri(uri).body(std::io::empty())?)
     }

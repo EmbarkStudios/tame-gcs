@@ -51,7 +51,7 @@ fn real_main() -> Result<(), Error> {
         .or_else(|| std::env::var_os("GOOGLE_APPLICATION_CREDENTIALS").map(PathBuf::from))
         .ok_or_else(|| anyhow::anyhow!("credentials not specified"))?;
 
-    let client = reqwest::Client::builder().build()?;
+    let client = reqwest::blocking::Client::builder().build()?;
     let svc_account_info =
         tame_oauth::gcp::ServiceAccountInfo::deserialize(std::fs::read_to_string(&cred_path)?)?;
     let svc_account_access = tame_oauth::gcp::ServiceAccountAccess::new(svc_account_info)?;

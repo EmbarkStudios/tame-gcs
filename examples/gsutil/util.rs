@@ -2,11 +2,11 @@ use anyhow::{anyhow, Context, Error};
 use std::{convert::TryInto, sync::Arc};
 use tame_oauth::gcp as oauth;
 
-/// Converts a vanilla http::Request into a reqwest::Request
+/// Converts a vanilla http::Request into a reqwest::blocking::Request
 fn convert_request<B>(
     req: http::Request<B>,
-    client: &reqwest::Client,
-) -> Result<reqwest::Request, Error>
+    client: &reqwest::blocking::Client,
+) -> Result<reqwest::blocking::Request, Error>
 where
     B: std::io::Read + Send + 'static,
 {
@@ -48,18 +48,20 @@ where
 
     Ok(builder
         .headers(parts.headers)
-        .body(reqwest::Body::new(body))
+        .body(reqwest::blocking::Body::new(body))
         .build()?)
 }
 
 /// Converts a reqwest::Response into a vanilla http::Response. This currently copies
 /// the entire response body into a single buffer with no streaming
-fn convert_response(mut res: reqwest::Response) -> Result<http::Response<bytes::Bytes>, Error> {
+fn convert_response(
+    mut res: reqwest::blocking::Response,
+) -> Result<http::Response<bytes::Bytes>, Error> {
     use std::io::Read;
 
-    let mut builder = http::Response::builder();
-
-    builder.status(res.status()).version(res.version());
+    let mut builder = http::Response::builder()
+        .status(res.status())
+        .version(res.version());
 
     let headers = builder
         .headers_mut()
@@ -98,7 +100,7 @@ fn convert_response(mut res: reqwest::Response) -> Result<http::Response<bytes::
 }
 
 pub struct RequestContext {
-    pub client: reqwest::Client,
+    pub client: reqwest::blocking::Client,
     pub cred_path: std::path::PathBuf,
     pub auth: Arc<oauth::ServiceAccountAccess>,
 }

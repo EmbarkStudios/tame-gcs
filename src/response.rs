@@ -74,7 +74,7 @@ where
     }
 
     /// Try to get an http::Response
-    pub fn get_response(&mut self) -> Result<http::Response<bytes::Bytes>, Error> {
+    pub fn get_response(mut self) -> Result<http::Response<bytes::Bytes>, Error> {
         if self.body.len() >= self.content_len {
             let buf = self.body.split_to(self.content_len);
             let response = self.parts.body(buf.freeze())?;
@@ -87,7 +87,7 @@ where
     }
 
     /// Try to parse all the data buffered so far into a response type.
-    pub fn parse(&mut self) -> Result<T, Error> {
+    pub fn parse(self) -> Result<T, Error> {
         let response = self.get_response()?;
         T::try_from_parts(response)
     }
