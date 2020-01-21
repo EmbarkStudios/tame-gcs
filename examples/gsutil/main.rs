@@ -43,7 +43,7 @@ struct Opts {
     cmd: Command,
 }
 
-fn real_main() -> Result<(), Error> {
+async fn real_main() -> Result<(), Error> {
     let args = Opts::from_args();
 
     let cred_path = args
@@ -51,7 +51,7 @@ fn real_main() -> Result<(), Error> {
         .or_else(|| std::env::var_os("GOOGLE_APPLICATION_CREDENTIALS").map(PathBuf::from))
         .ok_or_else(|| anyhow::anyhow!("credentials not specified"))?;
 
-    let client = reqwest::blocking::Client::builder().build()?;
+    let client = reqwest::Client::builder().build()?;
     let svc_account_info =
         tame_oauth::gcp::ServiceAccountInfo::deserialize(std::fs::read_to_string(&cred_path)?)?;
     let svc_account_access = tame_oauth::gcp::ServiceAccountAccess::new(svc_account_info)?;
@@ -63,18 +63,19 @@ fn real_main() -> Result<(), Error> {
     };
 
     match args.cmd {
-        Command::Cat(args) => cat::cmd(&ctx, args),
-        Command::Cp(args) => cp::cmd(&ctx, args),
-        Command::Ls(args) => ls::cmd(&ctx, args),
-        Command::Rm(args) => rm::cmd(&ctx, args),
+        Command::Cat(args) => cat::cmd(&ctx, args).await,
+        Command::Cp(args) => cp::cmd(&ctx, args).await,
+        Command::Ls(args) => ls::cmd(&ctx, args).await,
+        Command::Rm(args) => rm::cmd(&ctx, args).await,
         #[cfg(feature = "signing")]
-        Command::Signurl(args) => signurl::cmd(&ctx, args),
-        Command::Stat(args) => stat::cmd(&ctx, args),
+        Command::Signurl(args) => signurl::cmd(&ctx, args).await,
+        Command::Stat(args) => stat::cmd(&ctx, args).await,
     }
 }
 
-fn main() {
-    match real_main() {
+#[tokio::main]
+async fn main() {
+    match real_main().await {
         Ok(_) => {}
         Err(e) => {
             // let mut e = Some(e.as_ref() as &dyn std::error::Error);

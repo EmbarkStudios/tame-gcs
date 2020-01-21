@@ -24,7 +24,7 @@ last numbytes of the object."
     url: url::Url,
 }
 
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let mut download_req = Object::download(
@@ -46,7 +46,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::
         );
     }
 
-    let mut response: tame_gcs::objects::DownloadObjectResponse = util::execute(ctx, download_req)?;
+    let mut response: tame_gcs::objects::DownloadObjectResponse = util::execute(ctx, download_req).await?;
 
     std::io::copy(&mut response, &mut std::io::stdout())?;
 

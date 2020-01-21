@@ -2,15 +2,15 @@ use anyhow::{anyhow, Context, Error};
 use std::{convert::TryInto, sync::Arc};
 use tame_oauth::gcp as oauth;
 
-/// Converts a vanilla http::Request into a reqwest::blocking::Request
-fn convert_request<B>(
+/// Converts a vanilla http::Request into a reqwest::Request
+async fn convert_request<B>(
     req: http::Request<B>,
-    client: &reqwest::blocking::Client,
-) -> Result<reqwest::blocking::Request, Error>
+    client: &reqwest::Client,
+) -> Result<reqwest::Request, Error>
 where
     B: std::io::Read + Send + 'static,
 {
-    let (parts, body) = req.into_parts();
+    let (parts, mut body) = req.into_parts();
 
     let uri = parts.uri.to_string();
 
@@ -22,43 +22,30 @@ where
         method => unimplemented!("{} not implemented", method),
     };
 
-    struct ProgressRead<B> {
-        inner: B,
-        pb: indicatif::ProgressBar,
-    }
+    let content_len = tame_gcs::util::get_content_length(&parts.headers).unwrap_or(0);
+    let mut buffer = bytes::BytesMut::with_capacity(content_len);
 
-    impl<B> std::io::Read for ProgressRead<B>
-    where
-        B: std::io::Read + Send + 'static,
-    {
-        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-            let r = self.inner.read(buf)?;
-            self.pb.inc(r as u64);
-            Ok(r)
+    let mut block = [0u8; 8 * 1024];
+
+    loop {
+        let read = body.read(&mut block)?;
+
+        if read > 0 {
+            buffer.extend_from_slice(&block[..read]);
+        } else {
+            break;
         }
     }
 
-    let body = ProgressRead {
-        inner: body,
-        pb: match tame_gcs::util::get_content_length(&parts.headers) {
-            Some(content_len) => indicatif::ProgressBar::new(content_len as u64),
-            None => indicatif::ProgressBar::hidden(),
-        },
-    };
-
     Ok(builder
         .headers(parts.headers)
-        .body(reqwest::blocking::Body::new(body))
+        .body(buffer.freeze())
         .build()?)
 }
 
 /// Converts a reqwest::Response into a vanilla http::Response. This currently copies
 /// the entire response body into a single buffer with no streaming
-fn convert_response(
-    mut res: reqwest::blocking::Response,
-) -> Result<http::Response<bytes::Bytes>, Error> {
-    use std::io::Read;
-
+async fn convert_response(res: reqwest::Response) -> Result<http::Response<bytes::Bytes>, Error> {
     let mut builder = http::Response::builder()
         .status(res.status())
         .version(res.version());
@@ -76,37 +63,26 @@ fn convert_response(
     let content_len = tame_gcs::util::get_content_length(&headers).unwrap_or_default();
     let mut buffer = bytes::BytesMut::with_capacity(content_len);
 
-    let pb = if content_len > 0 {
-        indicatif::ProgressBar::new(content_len as u64)
-    } else {
-        indicatif::ProgressBar::hidden()
-    };
+    let mut stream = res.bytes_stream();
 
-    let mut block = [0u8; 8 * 1024];
+    use bytes::BufMut;
+    use futures_util::StreamExt;
 
-    loop {
-        let read = res.read(&mut block)?;
-
-        if read == 0 {
-            break;
-        }
-
-        buffer.extend_from_slice(&block[..read]);
-        pb.set_position(buffer.len() as u64);
+    while let Some(item) = stream.next().await {
+        buffer.put(item?);
     }
 
-    pb.finish_and_clear();
     Ok(builder.body(buffer.freeze())?)
 }
 
 pub struct RequestContext {
-    pub client: reqwest::blocking::Client,
+    pub client: reqwest::Client,
     pub cred_path: std::path::PathBuf,
     pub auth: Arc<oauth::ServiceAccountAccess>,
 }
 
 /// Executes a GCS request via a reqwest client and returns the parsed response/API error
-pub fn execute<B, R>(ctx: &RequestContext, mut req: http::Request<B>) -> Result<R, Error>
+pub async fn execute<B, R>(ctx: &RequestContext, mut req: http::Request<B>) -> Result<R, Error>
 where
     R: tame_gcs::ApiResponse<bytes::Bytes>,
     B: std::io::Read + Send + 'static,
@@ -125,13 +101,17 @@ where
             let new_request = http::Request::from_parts(parts, read_body);
 
             let req = convert_request(new_request, &ctx.client)
+                .await
                 .context("failed to create token request")?;
             let res = ctx
                 .client
                 .execute(req)
+                .await
                 .context("failed to send token request")?;
 
-            let response = convert_response(res).context("failed to convert token response")?;
+            let response = convert_response(res)
+                .await
+                .context("failed to convert token response")?;
 
             ctx.auth
                 .parse_token_response(scope_hash, response)
@@ -144,9 +124,11 @@ where
     req.headers_mut()
         .insert(http::header::AUTHORIZATION, token.try_into()?);
 
-    let request = convert_request(req, &ctx.client)?;
-    let response = ctx.client.execute(request)?;
-    let response = convert_response(response).context("failed to convert response")?;
+    let request = convert_request(req, &ctx.client).await?;
+    let response = ctx.client.execute(request).await?;
+    let response = convert_response(response)
+        .await
+        .context("failed to convert response")?;
 
     Ok(R::try_from_parts(response)?)
 }

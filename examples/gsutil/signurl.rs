@@ -74,7 +74,7 @@ Times may be specified with no suffix (default hours), or one of:
     url: url::Url,
 }
 
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let url_signer = signed_url::UrlSigner::with_ring();

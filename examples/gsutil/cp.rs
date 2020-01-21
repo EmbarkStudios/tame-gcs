@@ -44,7 +44,7 @@ impl TryFrom<String> for DataPath {
 
 // cp is probably gsutil's most complicated subcommand, so we only implement
 // a bare minimum
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     use std::fs;
 
     let src = DataPath::try_from(args.src_url)?;
@@ -83,7 +83,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
                 None,
             )?;
 
-            let _insert_res: objects::InsertResponse = util::execute(ctx, insert_req)?;
+            let _insert_res: objects::InsertResponse = util::execute(ctx, insert_req).await?;
 
             Ok(())
         }
@@ -99,7 +99,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
                 None,
             )?;
 
-            let mut response: objects::DownloadObjectResponse = util::execute(ctx, dl_req)?;
+            let mut response: objects::DownloadObjectResponse = util::execute(ctx, dl_req).await?;
 
             std::io::copy(&mut response, &mut dst_file)?;
 
