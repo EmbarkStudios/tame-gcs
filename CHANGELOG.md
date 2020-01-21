@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- Updated dependencies
+- Made the `gsutil` example use `async`
+
 ## [0.6.0] - 2019-12-20
 ### Changed
 - Upgraded `bytes` to `0.5.3`
