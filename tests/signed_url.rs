@@ -1,6 +1,6 @@
 #![cfg(feature = "signing")]
 
-use reqwest::blocking::Client;
+use reqwest::Client;
 use std::convert::TryFrom;
 use tame_gcs::{signed_url, signing, BucketName, ObjectName};
 
@@ -42,9 +42,9 @@ fn url_of_sadness(u: url::Url) -> reqwest::Url {
     reqwest::Url::parse(u.as_str()).unwrap()
 }
 
-#[test]
 #[ignore]
-fn download_object() {
+#[tokio::test]
+async fn download_object() {
     let url_signer = signed_url::UrlSigner::with_ring();
 
     let input = Input::new();
@@ -60,23 +60,20 @@ fn download_object() {
         )
         .expect("signed url");
 
-    let mut body = Vec::with_capacity(1024 * 1024);
-
-    let mut response = Client::new()
+    let response = Client::new()
         .get(url_of_sadness(signed))
         .send()
+        .await
         .expect("sent request")
         .error_for_status()
         .expect("successful request");
 
-    let content_len = response.copy_to(&mut body).expect("copied body");
-
-    assert_eq!(content_len as usize, body.len());
+    response.bytes().await.expect("read body");
 }
 
-#[test]
 #[ignore]
-fn gets_failure_responses_for_expired_urls() {
+#[tokio::test]
+async fn gets_failure_responses_for_expired_urls() {
     let url_signer = signed_url::UrlSigner::with_ring();
 
     let input = Input::new();
@@ -97,6 +94,7 @@ fn gets_failure_responses_for_expired_urls() {
     let response = Client::new()
         .get(url_of_sadness(signed))
         .send()
+        .await
         .expect("sent request");
 
     // We should get a failure response when trying to access a resource past its expiration
