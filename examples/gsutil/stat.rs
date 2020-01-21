@@ -9,7 +9,7 @@ pub(crate) struct Args {
     url: url::Url,
 }
 
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let get_req = Object::get(
@@ -20,7 +20,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
         ),
         None,
     )?;
-    let get_res: tame_gcs::objects::GetObjectResponse = util::execute(ctx, get_req)?;
+    let get_res: tame_gcs::objects::GetObjectResponse = util::execute(ctx, get_req).await?;
 
     let md = get_res.metadata;
 

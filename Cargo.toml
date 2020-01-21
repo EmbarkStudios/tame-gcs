@@ -43,14 +43,22 @@ anyhow = "1.0.11"
 number_prefix = "0.3.0"
 # Diff view of test failures
 difference = "2.0.0"
-# Because progress bars are fun
-indicatif = "0.13.0"
-# For doing actual requests in examples
-reqwest = { git = "https://github.com/seanmonstar/reqwest.git", rev = "18fd9a6", default-features = false, features = [ "rustls-tls", "blocking" ] }
+# For futures helpers
+futures-util = { version = "0.3.0", default-features = false }
 # Because it's good
 structopt = "0.3.2"
 # For doing actual authentication in examples
-tame-oauth = { git = "https://github.com/EmbarkStudios/tame-oauth.git", rev = "6c34d18", features = ["gcp"] }
+tame-oauth = { version = "0.4", features = ["gcp"] }
+
+# For doing actual requests in examples
+[dev-dependencies.reqwest]
+version = "0.10.1"
+default-features = false
+features = ["rustls-tls", "stream"]
+
+[dev-dependencies.tokio]
+version = "0.2.9"
+features = ["macros"]
 
 [features]
 default = ["v1"]

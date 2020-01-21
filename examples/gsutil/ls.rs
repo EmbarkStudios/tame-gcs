@@ -24,7 +24,7 @@ pub(crate) struct Args {
 /// Does an ls of a gs bucket minus the prefix specified by the user, this
 /// tries to mimic [exa](https://github.com/ogham/exa) when it can. Would also
 /// be good to support https://github.com/ogham/exa/blob/master/src/info/filetype.rs at some point
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let delimiter = if args.recurse { None } else { Some("/") };
@@ -82,7 +82,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
             }),
         )?;
 
-        let ls_res: ListResponse = util::execute(ctx, ls_req)?;
+        let ls_res: ListResponse = util::execute(ctx, ls_req).await?;
 
         if let Some(ref np) = normal {
             np.print(ls_res.objects, ls_res.prefixes);

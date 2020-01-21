@@ -8,7 +8,7 @@ pub(crate) struct Args {
     url: url::Url,
 }
 
-pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::Error> {
+pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
     let del_req = Object::delete(
@@ -20,7 +20,7 @@ pub(crate) fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), anyhow::
         None,
     )?;
 
-    util::execute::<_, tame_gcs::objects::DeleteObjectResponse>(ctx, del_req)?;
+    util::execute::<_, tame_gcs::objects::DeleteObjectResponse>(ctx, del_req).await?;
 
     Ok(())
 }
