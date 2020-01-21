@@ -46,7 +46,8 @@ pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), an
         );
     }
 
-    let mut response: tame_gcs::objects::DownloadObjectResponse = util::execute(ctx, download_req).await?;
+    let mut response: tame_gcs::objects::DownloadObjectResponse =
+        util::execute(ctx, download_req).await?;
 
     std::io::copy(&mut response, &mut std::io::stdout())?;
 
