@@ -3,7 +3,6 @@
 
 #[macro_use(Deserialize, Serialize)]
 extern crate serde;
-
 #[cfg(feature = "v1")]
 mod v1;
 #[cfg(feature = "v1")]
