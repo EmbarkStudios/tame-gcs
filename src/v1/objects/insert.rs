@@ -279,7 +279,7 @@ impl<B: AsyncRead> AsyncRead for Multipart<B> {
             MultipartPart::End => return Poll::Ready(Ok(0)),
         };
 
-        self.cursor.position += copied;
+        self.get_mut().cursor.position += copied;
         total_copied += copied;
 
         if self.cursor.position == len {
