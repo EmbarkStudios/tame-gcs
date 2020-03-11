@@ -4,12 +4,15 @@ use crate::{
     response::ApiResponse,
     types::{BucketName, ObjectIdentifier, ObjectName},
 };
+#[cfg(feature = "async-multipart")]
 use futures_util::{
     io::{AsyncRead, Result as FuturesResult},
     task::{Context, Poll},
 };
+#[cfg(feature = "async-multipart")]
 use std::pin::Pin;
 use std::{convert::TryFrom, io};
+#[cfg(feature = "async-multipart")]
 use pin_utils::unsafe_pinned;
 
 /// Optional parameters when inserting an object.
@@ -107,6 +110,7 @@ pub struct Multipart<B> {
 }
 
 impl<B> Multipart<B> {
+    #[cfg(feature = "async-multipart")]
     unsafe_pinned!(body: B);
 
     /// Wraps some body content and its metadata into a Multipart suitable for being
@@ -239,8 +243,7 @@ where
     }
 }
 
-impl<B: Unpin> Unpin for Multipart<B> {}
-
+#[cfg(feature = "async-multipart")]
 impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
     fn poll_read(
         mut self: Pin<&mut Self>,
