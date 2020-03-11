@@ -4,14 +4,13 @@ use crate::{
     response::ApiResponse,
     types::{BucketName, ObjectIdentifier, ObjectName},
 };
-#[cfg(features = "async-multipart")]
 use futures_util::{
     io::{AsyncRead, Result as FuturesResult},
     task::{Context, Poll},
 };
-#[cfg(features = "async-multipart")]
 use std::pin::Pin;
 use std::{convert::TryFrom, io};
+use pin_utils::unsafe_pinned;
 
 /// Optional parameters when inserting an object.
 /// See [here](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#parameters)
@@ -108,7 +107,6 @@ pub struct Multipart<B> {
 }
 
 impl<B> Multipart<B> {
-    #[cfg(features = "async-multipart")]
     unsafe_pinned!(body: B);
 
     /// Wraps some body content and its metadata into a Multipart suitable for being
@@ -241,14 +239,12 @@ where
     }
 }
 
-#[cfg(features = "async-multipart")]
 impl<B: Unpin> Unpin for Multipart<B> {}
 
-#[cfg(features = "async-multipart")]
-impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
-    fn pool_read(
+impl<B: AsyncRead> AsyncRead for Multipart<B> {
+    fn poll_read(
         mut self: Pin<&mut Self>,
-        cx: Context<'_>,
+        cx: &mut Context<'_>,
         buf: &mut [u8],
     ) -> Poll<FuturesResult<usize>> {
         use std::cmp::min;
@@ -265,8 +261,8 @@ impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
                 (to_copy, self.prefix.len())
             }
             MultipartPart::Body => {
-                let copied = match self.body().poll_read(buf) {
-                    Poll::Result(Ok(copied)) => copied,
+                let copied = match self.as_mut().body().poll_read(cx, buf) {
+                    Poll::Ready(Ok(copied)) => copied,
                     other => return other,
                 };
                 (copied, self.body_len as usize)
@@ -280,7 +276,7 @@ impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
 
                 (to_copy, MULTI_PART_SUFFIX.len())
             }
-            MultipartPart::End => return Poll::Result(Ok(0)),
+            MultipartPart::End => return Poll::Ready(Ok(0)),
         };
 
         self.cursor.position += copied;
@@ -291,7 +287,7 @@ impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
             self.cursor.position = 0;
         }
 
-        Poll::Result(Ok(total_copied))
+        Poll::Ready(Ok(total_copied))
     }
 }
 
