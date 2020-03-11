@@ -241,7 +241,7 @@ where
 
 impl<B: Unpin> Unpin for Multipart<B> {}
 
-impl<B: AsyncRead> AsyncRead for Multipart<B> {
+impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
     fn poll_read(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -279,7 +279,7 @@ impl<B: AsyncRead> AsyncRead for Multipart<B> {
             MultipartPart::End => return Poll::Ready(Ok(0)),
         };
 
-        self.get_mut().cursor.position += copied;
+        self.cursor.position += copied;
         total_copied += copied;
 
         if self.cursor.position == len {
