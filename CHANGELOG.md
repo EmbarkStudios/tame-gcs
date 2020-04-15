@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Added
+- Added `impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B>`. This is gated behind the new `async-multipart` feature. Thanks [@yiwu-arbug](https://github.com/yiwu-arbug)!
+
 ## [0.6.1] - 2020-01-21
 ### Changed
 - Updated dependencies
