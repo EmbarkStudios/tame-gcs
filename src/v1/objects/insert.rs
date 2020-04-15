@@ -4,6 +4,15 @@ use crate::{
     response::ApiResponse,
     types::{BucketName, ObjectIdentifier, ObjectName},
 };
+#[cfg(feature = "async-multipart")]
+use futures_util::{
+    io::{AsyncRead, Result as FuturesResult},
+    task::{Context, Poll},
+};
+#[cfg(feature = "async-multipart")]
+use pin_utils::unsafe_pinned;
+#[cfg(feature = "async-multipart")]
+use std::pin::Pin;
 use std::{convert::TryFrom, io};
 
 /// Optional parameters when inserting an object.
@@ -101,6 +110,9 @@ pub struct Multipart<B> {
 }
 
 impl<B> Multipart<B> {
+    #[cfg(feature = "async-multipart")]
+    unsafe_pinned!(body: B);
+
     /// Wraps some body content and its metadata into a Multipart suitable for being
     /// sent as an HTTP request body, the body will need to implement `std::io::Read`
     /// to be able to be used as intended.
@@ -113,8 +125,7 @@ impl<B> Multipart<B> {
         let serialized_metadata = serde_json::to_vec(metadata)?;
         let content_type = metadata
             .content_type
-            .as_ref()
-            .map(|s| s.as_str())
+            .as_deref()
             .unwrap_or_else(|| "application/octet-stream")
             .as_bytes();
 
@@ -228,6 +239,57 @@ where
         }
 
         Ok(total_copied)
+    }
+}
+
+#[cfg(feature = "async-multipart")]
+impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
+    fn poll_read(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &mut [u8],
+    ) -> Poll<FuturesResult<usize>> {
+        use std::cmp::min;
+        let mut total_copied = 0;
+
+        let (copied, len) = match self.cursor.part {
+            MultipartPart::Prefix => {
+                let to_copy = min(buf.len(), self.prefix.len() - self.cursor.position);
+
+                buf[..to_copy].copy_from_slice(
+                    &self.prefix[self.cursor.position..self.cursor.position + to_copy],
+                );
+
+                (to_copy, self.prefix.len())
+            }
+            MultipartPart::Body => {
+                let copied = match self.as_mut().body().poll_read(cx, buf) {
+                    Poll::Ready(Ok(copied)) => copied,
+                    other => return other,
+                };
+                (copied, self.body_len as usize)
+            }
+            MultipartPart::Suffix => {
+                let to_copy = min(buf.len(), MULTI_PART_SUFFIX.len() - self.cursor.position);
+
+                buf[..to_copy].copy_from_slice(
+                    &MULTI_PART_SUFFIX[self.cursor.position..self.cursor.position + to_copy],
+                );
+
+                (to_copy, MULTI_PART_SUFFIX.len())
+            }
+            MultipartPart::End => return Poll::Ready(Ok(0)),
+        };
+
+        self.cursor.position += copied;
+        total_copied += copied;
+
+        if self.cursor.position == len {
+            self.cursor.part.next();
+            self.cursor.position = 0;
+        }
+
+        Poll::Ready(Ok(total_copied))
     }
 }
 
