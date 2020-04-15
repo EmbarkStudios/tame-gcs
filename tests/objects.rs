@@ -302,3 +302,92 @@ fn multipart_read_paranoid() {
 
     util::cmp_strings(&expected_body, &String::from_utf8_lossy(&actual_body));
 }
+
+#[cfg(feature = "async-multipart")]
+#[test]
+fn insert_multipart_async() {
+    use futures_test::{io::AsyncReadTestExt, task::noop_context};
+    use futures_util::{
+        io::{AsyncRead, Cursor},
+        pin_mut,
+        task::Poll,
+    };
+
+    let body = TEST_CONTENT;
+
+    let metadata = Metadata {
+        name: Some("good_name".to_owned()),
+        content_type: Some("text/plain".to_owned()),
+        content_encoding: Some("gzip".to_owned()),
+        content_disposition: Some("attachment; filename=\"good name.jpg\"".to_owned()),
+        metadata: Some(
+            ["akey"]
+                .iter()
+                .map(|k| (String::from(*k), format!("{}value", k)))
+                .collect(),
+        ),
+        ..Default::default()
+    };
+
+    let insert_req = Object::insert_multipart(
+        &BucketName::non_validated("bucket"),
+        Cursor::new(body),
+        body.len() as u64,
+        &metadata,
+        None,
+    )
+    .unwrap();
+
+    let expected_body = format!(
+        "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
+        serde_json::to_string(&metadata).unwrap(),
+        body,
+        b = "tame_gcs"
+    );
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
+        .header(http::header::CONTENT_LENGTH, 3636)
+        .body(std::io::Cursor::new(expected_body))
+        .unwrap();
+
+    let (ap, ab) = insert_req.into_parts();
+    let (ep, mut eb) = expected.into_parts();
+
+    let expected = format!("{:#?}", ep);
+    let actual = format!("{:#?}", ap);
+
+    util::cmp_strings(&expected, &actual);
+
+    let mut act_bod = Vec::with_capacity(2 * 1024);
+    {
+        let reader = ab.interleave_pending();
+        pin_mut!(reader);
+        let mut cx = noop_context();
+        let mut buff = [0; 20];
+        loop {
+            match reader.as_mut().poll_read(&mut cx, &mut buff) {
+                Poll::Ready(size) => {
+                    let size = size.unwrap();
+                    if size == 0 {
+                        break;
+                    }
+
+                    act_bod.extend_from_slice(&buff[..size]);
+                }
+                Poll::Pending => {}
+            }
+        }
+    }
+
+    use std::io::Read;
+    let mut exp_bod = Vec::with_capacity(2 * 1024);
+    eb.read_to_end(&mut exp_bod).unwrap();
+
+    let act_body = String::from_utf8_lossy(&act_bod);
+    let exp_body = String::from_utf8_lossy(&exp_bod);
+
+    util::cmp_strings(&exp_body, &act_body);
+}

@@ -47,6 +47,8 @@ number_prefix = "0.3.0"
 difference = "2.0.0"
 # For futures helpers
 futures-util = { version = "0.3.0", default-features = false }
+# Futures testing utilities
+futures-test = { version = "0.3.0" }
 # Because it's good
 structopt = "0.3.2"
 # For doing actual authentication in examples
