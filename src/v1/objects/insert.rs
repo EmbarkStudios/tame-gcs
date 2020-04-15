@@ -125,8 +125,7 @@ impl<B> Multipart<B> {
         let serialized_metadata = serde_json::to_vec(metadata)?;
         let content_type = metadata
             .content_type
-            .as_ref()
-            .map(|s| s.as_str())
+            .as_deref()
             .unwrap_or_else(|| "application/octet-stream")
             .as_bytes();
 
