@@ -42,7 +42,7 @@ ansi_term = "0.11.0"
 # Friendly error handling
 anyhow = "1.0.11"
 # Human friendly byte sizes
-number_prefix = "0.3.0"
+number_prefix = "0.4.0"
 # Diff view of test failures
 difference = "2.0.0"
 # For futures helpers
