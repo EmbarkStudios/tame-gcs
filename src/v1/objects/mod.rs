@@ -20,12 +20,14 @@ mod download;
 mod get;
 mod insert;
 mod list;
+mod patch;
 
 pub use delete::*;
 pub use download::*;
 pub use get::*;
 pub use insert::*;
 pub use list::*;
+pub use patch::*;
 
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)

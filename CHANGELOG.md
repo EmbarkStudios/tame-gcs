@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Added
+- Added `Object::patch` for updating metadata for an object.
+
 ## [0.7.1] - 2020-06-04
 ### Changed
 - Updated dependencies

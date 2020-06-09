@@ -254,8 +254,8 @@ where
 /// A concrete object id which contains a valid bucket and object name
 /// which fully specifies an object
 pub struct ObjectId<'a> {
-    bucket: BucketName<'a>,
-    object: ObjectName<'a>,
+    pub bucket: BucketName<'a>,
+    pub object: ObjectName<'a>,
 }
 
 impl<'a> ObjectId<'a> {
