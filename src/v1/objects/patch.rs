@@ -66,9 +66,6 @@ impl super::Object {
         let md = serde_json::to_vec(metadata)?;
         let md = std::io::Cursor::new(md);
 
-        Ok(req_builder
-            .method("PATCH")
-            .uri(uri)
-            .body(md)?)
+        Ok(req_builder.method("PATCH").uri(uri).body(md)?)
     }
 }

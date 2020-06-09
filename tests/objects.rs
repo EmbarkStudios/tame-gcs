@@ -402,12 +402,7 @@ fn patches() {
         ..Default::default()
     };
 
-    let patch_req = Object::patch(
-        &ObjectId::new("bucket", "object").unwrap(),
-        &md,
-        None,
-    )
-    .unwrap();
+    let patch_req = Object::patch(&ObjectId::new("bucket", "object").unwrap(), &md, None).unwrap();
 
     let req_body = serde_json::to_vec(&md).unwrap();
 
@@ -458,7 +453,8 @@ fn parses_patch_response() {
        "#;
 
     let response = http::Response::new(body);
-    let patch_response = objects::PatchObjectResponse::try_from(response).expect("parsed patch response");
+    let patch_response =
+        objects::PatchObjectResponse::try_from(response).expect("parsed patch response");
 
     assert_eq!(patch_response.metadata.metadata.unwrap().len(), 10);
 }
