@@ -391,3 +391,74 @@ fn insert_multipart_async() {
 
     util::cmp_strings(&exp_body, &act_body);
 }
+
+#[test]
+fn patches() {
+    let mut md = std::collections::BTreeMap::new();
+    md.insert("yanked".to_owned(), "false".to_owned());
+
+    let md = objects::Metadata {
+        metadata: Some(md),
+        ..Default::default()
+    };
+
+    let patch_req = Object::patch(
+        &ObjectId::new("bucket", "object").unwrap(),
+        &md,
+        None,
+    )
+    .unwrap();
+
+    let req_body = serde_json::to_vec(&md).unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::PATCH)
+        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false")
+        .body(std::io::Cursor::new(req_body))
+        .unwrap();
+
+    util::requests_read_eq(patch_req, expected);
+}
+
+#[test]
+fn parses_patch_response() {
+    let body = r#"{
+        "kind": "storage#object",
+        "id": "bucket/test-elf/1591708511706797",
+        "selfLink": "https://www.googleapis.com/storage/v1/b/bucket/o/test-elf",
+        "name": "test-elf",
+        "bucket": "bucket",
+        "generation": "1591708511706797",
+        "metageneration": "2",
+        "contentType": "application/x-elf",
+        "timeCreated": "2020-06-09T13:15:11.706Z",
+        "updated": "2020-06-09T13:20:53.073Z",
+        "storageClass": "STANDARD",
+        "timeStorageClassUpdated": "2020-06-09T13:15:11.706Z",
+        "size": "11943404",
+        "md5Hash": "oIyGCnAge5QkDf7UjVYwgQ==",
+        "mediaLink": "https://content-storage.googleapis.com/download/storage/v1/b/bucket/o/test-elf?generation=1591708511706797&alt=media",
+        "contentEncoding": "zstd",
+        "contentDisposition": "attachment; filename=\"ark-client\"",
+        "metadata": {
+         "yanked": "false",
+         "triple": "x86_64-unknown-linux-gnu",
+         "size": "41468496",
+         "author": "Ark CI",
+         "branch": "master",
+         "config": "Release",
+         "version": "d8c83bd2b4cf808da298a2b2bc4ed3648581c5e0",
+         "hash": "z125TKX8ryaEHpsGyUZ8CGzbGnA9xp1m4834tQZ5vwfxq",
+         "version_semver": "0.1.9-pre",
+         "timestamp": "2020-05-28T06:11:38+00:00"
+        },
+        "crc32c": "7ClPhg==",
+        "etag": "CK29tKPo9OkCEAI="
+       }
+       "#;
+
+    let response = http::Response::new(body);
+    let patch_response = objects::PatchObjectResponse::try_from(response).expect("parsed patch response");
+
+    assert_eq!(patch_response.metadata.metadata.unwrap().len(), 10);
+}
