@@ -1,6 +1,6 @@
 # 📂 tame-gcs
 
-[![Build Status](https://travis-ci.com/EmbarkStudios/tame-gcs.svg?branch=master)](https://travis-ci.com/EmbarkStudios/tame-gcs)
+[![Build Status](https://github.com/EmbarkStudios/tame-gcs/workflows/CI/badge.svg)](https://github.com/EmbarkStudios/tame-gcs/actions?workflow=CI)
 [![Crates.io](https://img.shields.io/crates/v/tame-gcs.svg)](https://crates.io/crates/tame-gcs)
 [![Docs](https://docs.rs/tame-gcs/badge.svg)](https://docs.rs/tame-gcs)
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
