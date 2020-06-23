@@ -44,6 +44,7 @@ exceptions = [
     { allow = ["ISC"], name = "untrusted" },
     { allow = ["ISC"], name = "webpki" },
     { allow = ["ISC", "MIT", "OpenSSL"], name = "ring" },
+    { allow = ["Zlib"], name = "tinyvec" },
 ]
 
 [[licenses.clarify]]
