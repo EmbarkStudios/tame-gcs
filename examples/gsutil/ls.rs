@@ -166,12 +166,12 @@ impl NormalPrinter {
             match self.display {
                 Display::Normal => println!("{}", Color::White.paint(filename)),
                 Display::Long => {
-                    use number_prefix::{NumberPrefix, PrefixNames, Prefixed, Standalone};
+                    use number_prefix::NumberPrefix;
 
                     let size_str = match NumberPrefix::decimal(item.size.unwrap_or_default() as f64)
                     {
-                        Standalone(b) => b.to_string(),
-                        Prefixed(p, n) => {
+                        NumberPrefix::Standalone(b) => b.to_string(),
+                        NumberPrefix::Prefixed(p, n) => {
                             if n < 10f64 {
                                 format!("{:.1}{}", n, p.symbol())
                             } else {
@@ -296,13 +296,11 @@ impl RecursePrinter {
                                 writeln!(out, "{}", Color::White.paint(scoped_name)).unwrap()
                             }
                             Display::Long => {
-                                use number_prefix::{
-                                    NumberPrefix, PrefixNames, Prefixed, Standalone,
-                                };
+                                use number_prefix::NumberPrefix;
 
                                 let size_str = match NumberPrefix::decimal(item.size as f64) {
-                                    Standalone(b) => b.to_string(),
-                                    Prefixed(p, n) => {
+                                    NumberPrefix::Standalone(b) => b.to_string(),
+                                    NumberPrefix::Prefixed(p, n) => {
                                         if n < 10f64 {
                                             format!("{:.1}{}", n, p.symbol())
                                         } else {
