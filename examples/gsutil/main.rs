@@ -7,6 +7,7 @@ mod cat;
 mod cp;
 mod ls;
 mod rm;
+mod setmeta;
 #[cfg(feature = "signing")]
 mod signurl;
 mod stat;
@@ -24,6 +25,8 @@ enum Command {
     Ls(ls::Args),
     #[structopt(name = "rm")]
     Rm(rm::Args),
+    #[structopt(name = "setmeta")]
+    SetMeta(setmeta::Args),
     #[cfg(feature = "signing")]
     #[structopt(name = "signurl")]
     Signurl(signurl::Args),
@@ -67,6 +70,7 @@ async fn real_main() -> Result<(), Error> {
         Command::Cp(args) => cp::cmd(&ctx, args).await,
         Command::Ls(args) => ls::cmd(&ctx, args).await,
         Command::Rm(args) => rm::cmd(&ctx, args).await,
+        Command::SetMeta(args) => setmeta::cmd(&ctx, args).await,
         #[cfg(feature = "signing")]
         Command::Signurl(args) => signurl::cmd(&ctx, args).await,
         Command::Stat(args) => stat::cmd(&ctx, args).await,

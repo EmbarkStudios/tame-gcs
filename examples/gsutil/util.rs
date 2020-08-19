@@ -18,6 +18,7 @@ where
         http::Method::GET => client.get(&uri),
         http::Method::POST => client.post(&uri),
         http::Method::DELETE => client.delete(&uri),
+        http::Method::PATCH => client.patch(&uri),
         http::Method::PUT => client.put(&uri),
         method => unimplemented!("{} not implemented", method),
     };
@@ -89,7 +90,7 @@ where
 {
     // First, get our oauth token, which can mean we have to do an additional
     // request if we've never retrieved one yet, or the one we are using has expired
-    let token = match ctx.auth.get_token(&[tame_gcs::Scopes::ReadWrite])? {
+    let token = match ctx.auth.get_token(&[tame_gcs::Scopes::FullControl])? {
         oauth::TokenOrRequest::Token(token) => token,
         oauth::TokenOrRequest::Request {
             request,
