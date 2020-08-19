@@ -157,7 +157,7 @@ impl NormalPrinter {
 
                     print_dir(self.display, dir);
 
-                    std::mem::replace(&mut next_dir, next_dir_iter.next());
+                    next_dir = next_dir_iter.next();
                 }
             }
 
@@ -201,7 +201,7 @@ impl NormalPrinter {
 
             print_dir(self.display, dir);
 
-            std::mem::replace(&mut next_dir, next_dir_iter.next());
+            next_dir = next_dir_iter.next();
         }
     }
 }
