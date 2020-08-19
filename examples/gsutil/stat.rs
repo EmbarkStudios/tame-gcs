@@ -41,8 +41,15 @@ pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Er
     println!("    Content-Length:\t{}", md.size.expect("size"));
     println!(
         "    Content-Type:\t{}",
-        md.content_type.expect("content_type")
+        md.content_type.as_deref().unwrap_or_else(|| "None")
     );
+
+    if let Some(md) = &md.metadata {
+        for (k, v) in md {
+            println!("        {}:\t\t{}", k, v);
+        }
+    }
+
     println!("    Hash (crc32c):\t{}", md.crc32c.expect("crc32c"));
     println!("    Hash (md5):\t\t{}", md.md5_hash.expect("md5_hash"));
     println!("    ETag:\t\t{}", md.etag.expect("etag"));
