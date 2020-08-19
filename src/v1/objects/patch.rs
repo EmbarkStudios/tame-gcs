@@ -52,7 +52,8 @@ impl super::Object {
     where
         OID: ObjectIdentifier<'a> + ?Sized,
     {
-        let mut uri = crate::__make_obj_url!("https://www.googleapis.com/storage/v1/b/{}/o/{}", id);
+        let mut uri =
+            crate::__make_obj_url!("https://storage.googleapis.com/storage/v1/b/{}/o/{}", id);
 
         let query = optional.unwrap_or_default();
         let query_params = serde_urlencoded::to_string(query)?;
@@ -63,9 +64,15 @@ impl super::Object {
 
         let req_builder = http::Request::builder();
 
-        let md = serde_json::to_vec(metadata)?;
+        let md = serde_json::to_vec(&metadata)?;
+        let len = md.len();
         let md = std::io::Cursor::new(md);
 
-        Ok(req_builder.method("PATCH").uri(uri).body(md)?)
+        Ok(req_builder
+            .method("PATCH")
+            .header("content-type", "application/json")
+            .header("content-length", len)
+            .uri(uri)
+            .body(md)?)
     }
 }

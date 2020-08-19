@@ -402,13 +402,17 @@ fn patches() {
         ..Default::default()
     };
 
+    let expected_len = serde_json::to_vec(&md).unwrap().len();
+
     let patch_req = Object::patch(&ObjectId::new("bucket", "object").unwrap(), &md, None).unwrap();
 
     let req_body = serde_json::to_vec(&md).unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::PATCH)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false")
+        .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false")
+        .header("content-type", "application/json")
+        .header("content-length", expected_len)
         .body(std::io::Cursor::new(req_body))
         .unwrap();
 

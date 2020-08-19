@@ -5,22 +5,28 @@ use tame_gcs::objects::Object;
 
 #[derive(StructOpt, Debug)]
 pub(crate) struct Args {
-    /// The gs:// url to the object to stat
+    /// A valid JSON payload for the metadata to set
+    json: String,
+    /// The gs:// url to the object to set metadata for
     url: url::Url,
 }
 
 pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Error> {
     let oid = util::gs_url_to_object_id(&args.url)?;
 
-    let get_req = Object::get(
+    let md: tame_gcs::objects::Metadata = serde_json::from_str(&args.json)?;
+
+    let set_req = Object::patch(
         &(
             oid.bucket(),
             oid.object()
                 .ok_or_else(|| anyhow::anyhow!("invalid object name specified"))?,
         ),
+        &md,
         None,
     )?;
-    let get_res: tame_gcs::objects::GetObjectResponse = util::execute(ctx, get_req).await?;
+
+    let get_res: tame_gcs::objects::PatchObjectResponse = util::execute(ctx, set_req).await?;
 
     let md = get_res.metadata;
 
