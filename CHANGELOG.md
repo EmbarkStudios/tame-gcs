@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Fixed
+- Fixed `Object::patch` to not nuke all of your object's metadata and instead do what it was supposed to in the first place.
+
 ## [0.7.2] - 2020-06-09
 ### Added
 - Added `Object::patch` for updating metadata for an object.
