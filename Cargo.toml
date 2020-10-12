@@ -22,7 +22,7 @@ maintenance = { status = "actively-developed" }
 doctest = false
 
 [dependencies]
-base64 = "0.12"
+base64 = "0.12" # Follows version used by rustls
 bytes = "0.5"
 chrono = { version = "0.4", features = ["serde"] }
 futures-util = { version = "0.3", optional = true, features = ["io"] }
@@ -38,7 +38,7 @@ url = "2.1"
 
 [dev-dependencies]
 # COLORS! (follows version used by clap)
-ansi_term = "0.11.0"
+ansi_term = "0.11"
 # Friendly error handling
 anyhow = "1.0"
 # Human friendly byte sizes
