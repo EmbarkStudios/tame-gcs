@@ -61,7 +61,7 @@ default-features = false
 features = ["rustls-tls", "stream"]
 
 [dev-dependencies.tokio]
-version = "0.2"
+version = "0.3"
 features = ["macros"]
 
 [features]
