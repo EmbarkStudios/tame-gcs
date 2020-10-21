@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Added
+- Resolved [#30](closing [#30](https://github.com/EmbarkStudios/tame-gcs/issues/30)) by deriving `Copy, Clone, Debug, PartialEq, Eq` for `Scopes`, `DigestAlgorithm`, `SigningAlgorithm`, `StorageClass`, `PredefinedAcl`, and `PredefinedAcl`
+
+### Changed
+- Updated pin-utils to 0.1.0
+
 ## [0.7.3] - 2020-08-19
 ### Fixed
 - Fixed `Object::patch` to not nuke all of your object's metadata and instead do what it was supposed to in the first place.
