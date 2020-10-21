@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: EmbarkStudios/cargo-deny-action@14fca772c669b36d7c8401a158b6a422eaf24256
+      - uses: EmbarkStudios/cargo-deny-action@8b0a971
 
   publish-check:
     name: Publish Check
