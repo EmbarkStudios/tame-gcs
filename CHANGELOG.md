@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.8.0] - 2020-10-21
 ### Added
 - Resolved [#30](closing [#30](https://github.com/EmbarkStudios/tame-gcs/issues/30)) by deriving `Copy, Clone, Debug, PartialEq, Eq` for `Scopes`, `DigestAlgorithm`, `SigningAlgorithm`, `StorageClass`, `PredefinedAcl`, and `PredefinedAcl`
 
@@ -112,7 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.7.3...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.7.3...0.8.0
 [0.7.3]: https://github.com/EmbarkStudios/tame-gcs/compare/0.7.2...0.7.3
 [0.7.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.7.1...0.7.2
 [0.7.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.7.0...0.7.1
