@@ -18,6 +18,16 @@ exclude = [
 [badges]
 maintenance = { status = "actively-developed" }
 
+[features]
+default = ["v1"]
+# GCS JSON API v1 - Currently the only version of the API
+v1 = []
+# Enable this feature if you want to create signed URL's without
+# needing to implement the signing and digest
+signing = ["ring"]
+# Enable AsyncRead trait for multipart upload.
+async-multipart = ["futures-util", "pin-utils"]
+
 [lib]
 doctest = false
 
@@ -63,13 +73,3 @@ features = ["rustls-tls", "stream"]
 [dev-dependencies.tokio]
 version = "0.2"
 features = ["macros"]
-
-[features]
-default = ["v1"]
-# GCS JSON API v1 - Currently the only version of the API
-v1 = []
-# Enable this feature if you want to create signed URL's without
-# needing to implement the signing and digest
-signing = ["ring"]
-# Enable AsyncRead trait for multipart upload.
-async-multipart = ["futures-util", "pin-utils"]
