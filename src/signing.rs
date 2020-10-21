@@ -4,11 +4,13 @@ use crate::error::Error;
 use std::fmt;
 
 /// The supported algorithms for creating a digest of content
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum DigestAlgorithm {
     Sha256,
 }
 
 /// The supported algorithms for signing payloads
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum SigningAlgorithm {
     RsaSha256,
 }

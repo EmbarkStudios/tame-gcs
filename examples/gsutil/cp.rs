@@ -20,12 +20,9 @@ enum DataPath {
 }
 
 impl DataPath {
+    #[inline]
     fn is_file(&self) -> bool {
-        if let DataPath::File(_) = self {
-            true
-        } else {
-            false
-        }
+        matches!(self, Self::File(_))
     }
 }
 
@@ -35,9 +32,9 @@ impl TryFrom<String> for DataPath {
     fn try_from(s: String) -> Result<Self, Self::Error> {
         if s.starts_with("gs://") {
             let url = url::Url::parse(&s)?;
-            Ok(DataPath::Gs(util::gs_url_to_object_id(&url)?))
+            Ok(Self::Gs(util::gs_url_to_object_id(&url)?))
         } else {
-            Ok(DataPath::File(PathBuf::from(s)))
+            Ok(Self::File(PathBuf::from(s)))
         }
     }
 }
