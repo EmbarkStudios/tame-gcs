@@ -76,7 +76,7 @@ pub struct Conditionals {
 }
 
 /// [Storage classes](https://cloud.google.com/storage/docs/storage-classes)
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum StorageClass {
     /// [Multi-Regional Storage](https://cloud.google.com/storage/docs/storage-classes#multi-regional)
@@ -125,7 +125,7 @@ impl fmt::Display for StorageClass {
 /// to a bucket or object. Predefined ACLs are defined for common scenarios such as revoking all access
 /// permissions except for owner permission (predefined ACL private), or making an object publicly readable
 /// (predefined ACL publicRead).
-#[derive(Serialize)]
+#[derive(Serialize, Copy, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum PredefinedAcl {
     /// Object owner gets OWNER access, and allAuthenticatedUsers get READER access.
@@ -143,7 +143,7 @@ pub enum PredefinedAcl {
 }
 
 /// Set of properties to return. Defaults to NoAcl.
-#[derive(Serialize)]
+#[derive(Serialize, Copy, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum Projection {
     /// Include all properties.

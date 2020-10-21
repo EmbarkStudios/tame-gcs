@@ -26,6 +26,7 @@ pub use types::{BucketName, ObjectId, ObjectName};
 
 /// The [oauth scopes](https://cloud.google.com/storage/docs/authentication)
 /// that pertain to Google Cloud Storage.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Scopes {
     /// Only allows access to read data, including listing buckets.
     ReadOnly,
