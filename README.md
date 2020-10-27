@@ -1,10 +1,11 @@
 # 📂 tame-gcs
 
-[![Build Status](https://github.com/EmbarkStudios/tame-gcs/workflows/CI/badge.svg)](https://github.com/EmbarkStudios/tame-gcs/actions?workflow=CI)
+[![Embark](https://img.shields.io/badge/embark-open%20source-blueviolet.svg)](https://embark.dev)
+[![Embark](https://img.shields.io/badge/discord-ark-%237289da.svg?logo=discord)](https://discord.gg/dAuKfZS)
 [![Crates.io](https://img.shields.io/crates/v/tame-gcs.svg)](https://crates.io/crates/tame-gcs)
 [![Docs](https://docs.rs/tame-gcs/badge.svg)](https://docs.rs/tame-gcs)
-[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
-[![Embark](https://img.shields.io/badge/embark-open%20source-blueviolet.svg)](http://embark.games)
+[![dependency status](https://deps.rs/repo/github/EmbarkStudios/tame-gcs/status.svg)](https://deps.rs/repo/github/EmbarkStudios/tame-gcs)
+[![Build Status](https://github.com/EmbarkStudios/tame-gcs/workflows/CI/badge.svg)](https://github.com/EmbarkStudios/tame-gcs/actions?workflow=CI)
 
 `tame-gcs` is a crate with a limited set of [Google Cloud Storage(GCS)](https://cloud.google.com/storage/) operations that follows the [sans-io](https://sans-io.readthedocs.io/) approach.
 
@@ -31,6 +32,8 @@ is a work in progress that gives examples of using the different operations that
 * [stat](examples/gsutil/stat.rs) - Shows an example of [Object::get](https://docs.rs/tame-gcs/latest/tame_gcs/objects/struct.Object.html#method.get)
 
 ## Contributing
+
+[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4-ff69b4.svg)](../CODE_OF_CONDUCT.md)
 
 We welcome community contributions to this project.
 
