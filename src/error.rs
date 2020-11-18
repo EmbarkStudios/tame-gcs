@@ -28,7 +28,7 @@ pub enum Error {
     #[error("Response body doesn't contain enough data")]
     InsufficientData,
     #[error("Key rejected: {0}")]
-    KeyRejected(&'static str),
+    KeyRejected(String),
     #[error("An error occurred during signing")]
     SigningError,
     #[error("An expiration duration was too long: requested = {requested}, max = {max}")]
@@ -159,7 +159,7 @@ impl fmt::Display for ApiError {
 #[cfg(feature = "signing")]
 impl From<ring::error::KeyRejected> for Error {
     fn from(re: ring::error::KeyRejected) -> Self {
-        Error::KeyRejected(re.description_())
+        Error::KeyRejected(format!("{}", re))
     }
 }
 
