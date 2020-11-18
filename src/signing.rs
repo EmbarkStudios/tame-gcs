@@ -97,7 +97,7 @@ impl ServiceAccount {
             .private_key
             .splitn(5, "-----")
             .nth(2)
-            .ok_or_else(|| Error::KeyRejected("invalid key format"))?;
+            .ok_or_else(|| Error::KeyRejected("invalid key format".to_owned()))?;
 
         // Strip out all of the newlines
         let key_string = key_string.split_whitespace().fold(
@@ -169,7 +169,9 @@ impl Signer for RingSigner {
                     Key::Pkcs8(key) => ring::signature::RsaKeyPair::from_pkcs8(key),
                     Key::Der(key) => ring::signature::RsaKeyPair::from_der(key),
                     Key::Hmac(_) => {
-                        return Err(Error::KeyRejected("HMAC cannot be used with RSA signing"))
+                        return Err(Error::KeyRejected(
+                            "HMAC cannot be used with RSA signing".to_owned(),
+                        ))
                     }
                 }?;
 
