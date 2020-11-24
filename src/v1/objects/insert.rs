@@ -126,7 +126,7 @@ impl<B> Multipart<B> {
         let content_type = metadata
             .content_type
             .as_deref()
-            .unwrap_or_else(|| "application/octet-stream")
+            .unwrap_or("application/octet-stream")
             .as_bytes();
 
         let metadata = &serialized_metadata[..];
@@ -326,9 +326,7 @@ impl super::Object {
             .header(
                 http::header::CONTENT_TYPE,
                 http::header::HeaderValue::from_str(
-                    query
-                        .content_type
-                        .unwrap_or_else(|| "application/octet-stream"),
+                    query.content_type.unwrap_or("application/octet-stream"),
                 )
                 .map_err(http::Error::from)?,
             )
