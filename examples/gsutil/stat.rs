@@ -41,7 +41,7 @@ pub(crate) async fn cmd(ctx: &util::RequestContext, args: Args) -> Result<(), Er
     println!("    Content-Length:\t{}", md.size.expect("size"));
     println!(
         "    Content-Type:\t{}",
-        md.content_type.as_deref().unwrap_or_else(|| "None")
+        md.content_type.as_deref().unwrap_or("None")
     );
 
     if let Some(md) = &md.metadata {
