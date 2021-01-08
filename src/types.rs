@@ -25,7 +25,7 @@ impl<'a> BucketName<'a> {
         let count = name.chars().count();
 
         // Bucket names must contain 3 to 63 characters.
-        if count < 3 || count > 63 {
+        if !(3..=63).contains(&count) {
             return Err(Error::InvalidCharacterCount {
                 len: count,
                 min: 3,
