@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- Updated bytes to 1.0
+- Updated url to 2.2
+
 ## [0.8.1] - 2020-11-18
 ### Fixed
 - [PR#36](https://github.com/EmbarkStudios/tame-gcs/pull/36) fixed an issue with the minor version bump of ring from 0.16.15 => 0.16.16.
