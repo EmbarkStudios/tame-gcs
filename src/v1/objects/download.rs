@@ -61,7 +61,7 @@ impl io::Read for DownloadObjectResponse {
         use bytes::Buf;
 
         let buf_len = std::cmp::min(self.buffer.len(), buf.len());
-        let mut slice = self.buffer.split_to(buf_len).to_bytes();
+        let mut slice = self.buffer.split_to(buf_len);
         slice.copy_to_slice(&mut buf[..buf_len]);
 
         Ok(buf_len)

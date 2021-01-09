@@ -10,9 +10,9 @@ vulnerability = "deny"
 unmaintained = "deny"
 unsound = "deny"
 ignore = [
-    # net2 is deprecated in favor of socket2
-    # but hyper, mio, miow crates are still using net2
-    "RUSTSEC-2020-0016",
+    # difference is unmaintained, but it's dev only, and suits our needs
+    # fine for now
+    "RUSTSEC-2020-0095",
 ]
 
 [bans]
@@ -24,10 +24,6 @@ deny = [
 skip = [
     # rustls uses old versions
     { name = "base64", version = "=0.12.3" },
-    { name = "pin-project-lite", version = "=0.1.11" },
-
-    # mio uses an ancient version of winapi
-    { name = "winapi", version = "=0.2.8" },
 
     # most crates still use the pre-1.0 version
     { name = "cfg-if", version = "=0.1.10" },
