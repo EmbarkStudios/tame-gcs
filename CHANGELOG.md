@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- Updated `bytes` to `0.13`, aligning with the version used by `rustls`
+
 ## [0.9.0] - 2021-01-09
 ### Changed
 - Updated bytes to 1.0
