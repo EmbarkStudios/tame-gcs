@@ -22,9 +22,6 @@ deny = [
     { name = "openssl-sys" },
 ]
 skip = [
-    # rustls uses old versions
-    { name = "base64", version = "=0.12.3" },
-
     # most crates still use the pre-1.0 version
     { name = "cfg-if", version = "=0.1.10" },
 ]
