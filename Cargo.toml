@@ -47,29 +47,5 @@ thiserror = "1.0"
 url = "2.2"
 
 [dev-dependencies]
-# COLORS! (follows version used by clap)
-ansi_term = "0.11"
-# Friendly error handling
-anyhow = "1.0"
-# Human friendly byte sizes
-number_prefix = "0.4"
 # Diff view of test failures
 difference = "2.0"
-# For futures helpers
-futures-util = { version = "0.3", default-features = false }
-# Futures testing utilities
-futures-test = { version = "0.3" }
-# Because it's good
-structopt = "0.3"
-# For doing actual authentication in examples
-tame-oauth = { version = "0.4", features = ["gcp"] }
-
-# For doing actual requests in examples
-[dev-dependencies.reqwest]
-version = "0.11"
-default-features = false
-features = ["rustls-tls", "stream"]
-
-[dev-dependencies.tokio]
-version = "1.0"
-features = ["macros", "rt-multi-thread"]
