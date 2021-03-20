@@ -117,5 +117,5 @@ where
     use serde::de::Deserialize;
 
     let s: &str = Deserialize::deserialize(deserializer)?;
-    Ok(Some(T::from_str(&s).map_err(serde::de::Error::custom)?))
+    Ok(Some(T::from_str(s).map_err(serde::de::Error::custom)?))
 }

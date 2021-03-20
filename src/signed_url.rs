@@ -18,7 +18,7 @@ pub struct UrlSigner<D, S> {
 
 #[cfg(feature = "signing")]
 impl UrlSigner<signing::RingDigest, signing::RingSigner> {
-    /// Creates a UrlSigner implemented via `ring`
+    /// Creates a [`UrlSigner`] implemented via `ring`
     pub fn with_ring() -> UrlSigner<signing::RingDigest, signing::RingSigner> {
         UrlSigner::new(signing::RingDigest, signing::RingSigner)
     }
@@ -29,7 +29,7 @@ where
     D: signing::DigestCalulator,
     S: signing::Signer,
 {
-    /// Creates a new UrlSigner from a `DigestCalculator` implementation
+    /// Creates a new [`UrlSigner`] from a [`DigestCalculator`] implementation
     /// capable of generating SHA256 digests of buffers, and a `Signer`
     /// capable of doing RSA-SHA256 encryption. You may implement these
     /// on your own using whatever crates you prefer, or you can use the
@@ -44,7 +44,7 @@ where
     /// may succeed in generating a url, the actual operation using it may fail
     /// if the account used to sign the URL does not have sufficient permissions
     /// for the resource. For example, if you provided a GCP service account
-    /// that had devstorage.read_only permissions for the bucket/object, this method
+    /// that had `devstorage.read_only` permissions for the bucket/object, this method
     /// would succeed in generating a signed url for a `POST` operation, but the actual
     /// `POST` using that url would fail as the account does not itself have permissions
     /// for the `POST` operation.
@@ -113,7 +113,7 @@ where
 
                     key_vals.push_str(
                         val.to_str()
-                            .map_err(|_| Error::OpaqueHeaderValue(val.clone()))?,
+                            .map_err(|_err| Error::OpaqueHeaderValue(val.clone()))?,
                     );
                 }
 
@@ -226,9 +226,7 @@ where
             &mut digest,
         );
 
-        let mut digest_str_bytes = [0u8; 64];
-        let digest_str = crate::util::to_hex(&digest, &mut digest_str_bytes)
-            .expect("unable to construct digest string");
+        let digest_str = crate::util::to_hex(&digest);
 
         // 3. Construct the string-to-sign.
         // SIGNING_ALGORITHM
@@ -248,13 +246,11 @@ where
             string_to_sign.as_bytes(),
         )?;
 
-        let mut signature_str_bytes = vec![0; signature.len() * 2];
-        let signature_str = crate::util::to_hex(&signature, &mut signature_str_bytes)
-            .expect("unable to construct signature string");
+        let signature_str = crate::util::to_hex(&signature);
 
         signed_url
             .query_pairs_mut()
-            .append_pair("X-Goog-Signature", signature_str);
+            .append_pair("X-Goog-Signature", signature_str.as_str());
 
         // 4. Profit!
         Ok(signed_url)

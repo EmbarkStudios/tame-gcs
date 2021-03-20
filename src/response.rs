@@ -73,7 +73,7 @@ where
         }
     }
 
-    /// Try to get an http::Response
+    /// Try to get an [`http::Response`]
     pub fn get_response(mut self) -> Result<http::Response<bytes::Bytes>, Error> {
         if self.body.len() >= self.content_len {
             let buf = self.body.split_to(self.content_len);

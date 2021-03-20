@@ -30,7 +30,7 @@ pub enum Error {
     #[error("Key rejected: {0}")]
     KeyRejected(String),
     #[error("An error occurred during signing")]
-    SigningError,
+    Signing,
     #[error("An expiration duration was too long: requested = {requested}, max = {max}")]
     TooLongExpiration { requested: u64, max: u64 },
     #[error("Failed to parse url")]
@@ -166,6 +166,6 @@ impl From<ring::error::KeyRejected> for Error {
 #[cfg(feature = "signing")]
 impl From<ring::error::Unspecified> for Error {
     fn from(_re: ring::error::Unspecified) -> Self {
-        Error::SigningError
+        Error::Signing
     }
 }

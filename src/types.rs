@@ -11,7 +11,7 @@ pub struct BucketName<'a> {
 }
 
 impl<'a> BucketName<'a> {
-    /// Creates a BucketName without validating it, meaning
+    /// Creates a [`BucketName`] without validating it, meaning
     /// that invalid names will result in API failures when
     /// requests are actually made to GCS instead.
     pub fn non_validated<S: AsRef<str> + ?Sized>(name: &'a S) -> Self {
@@ -41,8 +41,7 @@ impl<'a> BucketName<'a> {
             }
 
             match c {
-                'a'..='z' => {}
-                '0'..='9' => {}
+                'a'..='z' | '0'..='9' => {}
                 '-' | '_' => {
                     // Bucket names must start and end with a number or letter.
                     if i == 0 || i == last {
@@ -121,7 +120,7 @@ pub struct ObjectName<'a> {
 }
 
 impl<'a> ObjectName<'a> {
-    /// Creates an ObjectName without validating it, meaning
+    /// Creates an `ObjectName` without validating it, meaning
     /// that invalid names will result in API failures when
     /// requests are actually made to GCS instead.
     pub fn non_validated<S: AsRef<str> + ?Sized>(name: &'a S) -> Self {
@@ -146,6 +145,8 @@ impl<'a> ObjectName<'a> {
             return Err(Error::InvalidPrefix("."));
         }
 
+        #[allow(clippy::match_same_arms)]
+        // Intentionally matching the same arms to make the code cleaner for reading
         for (i, c) in name.chars().enumerate() {
             match c {
                 // Object names cannot contain Carriage Return or Line Feed characters.
