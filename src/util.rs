@@ -40,3 +40,16 @@ pub(crate) const PATH_ENCODE_SET: &percent_encoding::AsciiSet = &QUERY_ENCODE_SE
     .add(b'}')
     .add(b'%')
     .add(b'/');
+
+#[cfg(test)]
+mod test {
+    #[test]
+    #[allow(unsafe_code)]
+    fn converts_to_hex() {
+        let expected = format!("{:x}", 1234529871u32);
+
+        let bytes = 1234529871u32.to_be_bytes();
+
+        assert_eq!(expected, super::to_hex(&bytes));
+    }
+}
