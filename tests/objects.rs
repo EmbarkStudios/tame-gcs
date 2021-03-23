@@ -402,11 +402,10 @@ fn patches() {
         ..Default::default()
     };
 
-    let expected_len = serde_json::to_vec(&md).unwrap().len();
-
     let patch_req = Object::patch(&ObjectId::new("bucket", "object").unwrap(), &md, None).unwrap();
 
     let req_body = serde_json::to_vec(&md).unwrap();
+    let expected_len = req_body.len();
 
     let expected = http::Request::builder()
         .method(http::Method::PATCH)
@@ -461,4 +460,140 @@ fn parses_patch_response() {
         objects::PatchObjectResponse::try_from(response).expect("parsed patch response");
 
     assert_eq!(patch_response.metadata.metadata.unwrap().len(), 10);
+}
+
+#[test]
+fn rewrites_simple() {
+    let rewrite_req = Object::rewrite(
+        &ObjectId::new("source", "object").unwrap(),
+        &ObjectId::new("target", "object/target.sh").unwrap(),
+        None,
+        None,
+        None,
+    )
+    .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://storage.googleapis.com/storage/v1/b/source/o/object/rewriteTo/b/target/o/object%2Ftarget.sh?prettyPrint=false")
+        .body(std::io::Cursor::new(Vec::new()))
+        .unwrap();
+
+    util::requests_read_eq(rewrite_req, expected);
+}
+
+#[test]
+fn rewrites_token() {
+    let rewrite_req = Object::rewrite(
+        &ObjectId::new("source", "object/source.sh").unwrap(),
+        &ObjectId::new("target", "object/target.sh").unwrap(),
+        Some("tokeymctoken".to_owned()),
+        None,
+        None,
+    )
+    .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://storage.googleapis.com/storage/v1/b/source/o/object%2Fsource.sh/rewriteTo/b/target/o/object%2Ftarget.sh?rewriteToken=tokeymctoken&prettyPrint=false")
+        .body(std::io::Cursor::new(Vec::new()))
+        .unwrap();
+
+    util::requests_read_eq(rewrite_req, expected);
+}
+
+#[test]
+fn rewrites_metadata() {
+    let mut md = std::collections::BTreeMap::new();
+    md.insert("ohhi".to_owned(), "there".to_owned());
+    let md = objects::Metadata {
+        metadata: Some(md),
+        ..Default::default()
+    };
+
+    let rewrite_req = Object::rewrite(
+        &ObjectId::new("source", "object/source.sh").unwrap(),
+        &ObjectId::new("target", "object/target.sh").unwrap(),
+        None,
+        Some(&md),
+        Some(objects::RewriteObjectOptional {
+            max_bytes_rewritten_per_call: Some(20),
+            ..Default::default()
+        }),
+    )
+    .unwrap();
+
+    let req_body = serde_json::to_vec(&md).unwrap();
+    let expected_len = req_body.len();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://storage.googleapis.com/storage/v1/b/source/o/object%2Fsource.sh/rewriteTo/b/target/o/object%2Ftarget.sh?prettyPrint=false&maxBytesRewrittenPerCall=20")
+        .header("content-type", "application/json")
+        .header("content-length", expected_len)
+        .body(std::io::Cursor::new(req_body))
+        .unwrap();
+
+    util::requests_read_eq(rewrite_req, expected);
+}
+
+#[test]
+fn deserializes_partial_rewrite_response() {
+    let body = r#"{
+        "kind": "storage#rewriteResponse",
+        "totalBytesRewritten": "435",
+        "objectSize": "436",
+        "done": false,
+        "rewriteToken": "tokendata"
+      }"#;
+
+    let response = http::Response::new(body);
+    let rewrite_response =
+        objects::RewriteObjectResponse::try_from(response).expect("parsed rewrite response");
+
+    assert_eq!(rewrite_response.total_bytes_rewritten, 435);
+    assert_eq!(rewrite_response.done, false);
+    assert_eq!(rewrite_response.rewrite_token.unwrap(), "tokendata");
+}
+
+#[test]
+fn deserializes_complete_rewrite_response() {
+    let body = r#"{
+        "kind": "storage#rewriteResponse",
+        "totalBytesRewritten": "435",
+        "objectSize": "435",
+        "done": true,
+        "resource": {
+          "kind": "storage#object",
+          "id": "bucket/script.sh/1613655147314255",
+          "selfLink": "https://www.googleapis.com/storage/v1/b/bucket/o/script.sh",
+          "mediaLink": "https://content-storage.googleapis.com/download/storage/v1/b/bucket/o/script.sh?generation=1613655147314255&alt=media",
+          "name": "script.sh",
+          "bucket": "bucket",
+          "generation": "1613655147314255",
+          "metageneration": "1",
+          "storageClass": "STANDARD",
+          "size": "435",
+          "md5Hash": "M8CAuwyX6GWwOnF5XxvqRw==",
+          "crc32c": "3kHdqA==",
+          "etag": "CM/44e7F8+4CEAE=",
+          "timeCreated": "2021-02-18T13:32:27.315Z",
+          "updated": "2021-02-18T13:32:27.315Z",
+          "timeStorageClassUpdated": "2021-02-18T13:32:27.315Z",
+          "metadata": {
+            "ohhi": "true"
+          }
+        }
+      }"#;
+
+    let response = http::Response::new(body);
+    let rewrite_response =
+        objects::RewriteObjectResponse::try_from(response).expect("parsed rewrite response");
+
+    assert_eq!(rewrite_response.total_bytes_rewritten, 435);
+    assert_eq!(rewrite_response.done, true);
+    assert_eq!(
+        rewrite_response.metadata.unwrap().name.unwrap(),
+        "script.sh"
+    );
 }

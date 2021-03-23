@@ -21,6 +21,7 @@ mod get;
 mod insert;
 mod list;
 mod patch;
+mod rewrite;
 
 pub use delete::*;
 pub use download::*;
@@ -28,6 +29,7 @@ pub use get::*;
 pub use insert::*;
 pub use list::*;
 pub use patch::*;
+pub use rewrite::*;
 
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
@@ -118,4 +120,16 @@ where
 
     let s: &str = Deserialize::deserialize(deserializer)?;
     Ok(Some(T::from_str(s).map_err(serde::de::Error::custom)?))
+}
+
+fn from_str<'de, T, D>(deserializer: D) -> Result<T, D::Error>
+where
+    T: std::str::FromStr,
+    T::Err: std::fmt::Display,
+    D: serde::de::Deserializer<'de>,
+{
+    use serde::de::Deserialize;
+
+    let s: &str = Deserialize::deserialize(deserializer)?;
+    Ok(T::from_str(s).map_err(serde::de::Error::custom)?)
 }

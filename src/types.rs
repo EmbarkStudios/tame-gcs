@@ -146,7 +146,6 @@ impl<'a> ObjectName<'a> {
         }
 
         #[allow(clippy::match_same_arms)]
-        // Intentionally matching the same arms to make the code cleaner for reading
         for (i, c) in name.chars().enumerate() {
             match c {
                 // Object names cannot contain Carriage Return or Line Feed characters.
@@ -161,8 +160,7 @@ impl<'a> ObjectName<'a> {
                 '#' | '[' | ']' | '*' | '?' => {}
                 // Avoid using control characters that are illegal in XML 1.0 (#x7F–#x84 and #x86–#x9F):
                 // these characters will cause XML listing issues when you try to list your objects.
-                '\u{7F}'..='\u{84}' => {}
-                '\u{86}'..='\u{9F}' => {}
+                '\u{7F}'..='\u{84}' | '\u{86}'..='\u{9F}' => {}
                 _ => {
                     continue;
                 }
