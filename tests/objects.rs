@@ -1,4 +1,3 @@
-use objects::RewriteObjectResponse;
 use std::convert::TryFrom;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},

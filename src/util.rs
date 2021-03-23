@@ -3,17 +3,13 @@
 pub(crate) fn to_hex(input: &[u8]) -> String {
     const CHARS: &[u8] = b"0123456789abcdef";
 
-    let mut ind = 0;
-
-    let mut result = Vec::new();
+    let mut result = String::with_capacity(input.len() * 2);
     for &byte in input {
-        result[ind] = CHARS[(byte >> 4) as usize] as char;
-        result[ind + 1] = CHARS[(byte & 0xf) as usize] as char;
-
-        ind += 2;
+        result.push(CHARS[(byte >> 4) as usize] as char);
+        result.push(CHARS[(byte & 0xf) as usize] as char);
     }
 
-    result.iter().collect()
+    result
 }
 
 pub fn get_content_length(headers: &http::HeaderMap) -> Option<usize> {
