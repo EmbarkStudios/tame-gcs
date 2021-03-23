@@ -142,7 +142,7 @@ pub enum PredefinedAcl {
     PublicRead,
 }
 
-/// Set of properties to return. Defaults to NoAcl.
+/// Set of properties to return. Defaults to `NoAcl`.
 #[derive(Serialize, Copy, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum Projection {
