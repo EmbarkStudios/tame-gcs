@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - 2020-10-21
 ### Added
-- Resolved [#30](closing [#30](https://github.com/EmbarkStudios/tame-gcs/issues/30)) by deriving `Copy, Clone, Debug, PartialEq, Eq` for `Scopes`, `DigestAlgorithm`, `SigningAlgorithm`, `StorageClass`, `PredefinedAcl`, and `PredefinedAcl`
+- Resolved [#30](https://github.com/EmbarkStudios/tame-gcs/issues/30) by deriving `Copy, Clone, Debug, PartialEq, Eq` for `Scopes`, `DigestAlgorithm`, `SigningAlgorithm`, `StorageClass`, `PredefinedAcl`, and `PredefinedAcl`
 
 ### Changed
 - Updated pin-utils to 0.1.0
@@ -77,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace use of `failure` with `thiserror` for the library
 - Replace use of `failure` with `anyhow` in the examples
 
-## [0.4.0] - 2019-08-02
+## [0.4.1] - 2019-08-02
 ### Added
 - Added `ls` example to `gsutil`
 - Fleshed out documentation
