@@ -46,7 +46,7 @@ pub enum Error {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub struct HttpError(#[source] http::Error);
+pub struct HttpError(#[source] pub http::Error);
 
 impl fmt::Display for HttpError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -68,7 +68,7 @@ impl From<http::Error> for Error {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub struct HttpStatusError(http::StatusCode);
+pub struct HttpStatusError(pub http::StatusCode);
 
 impl PartialEq for HttpStatusError {
     fn eq(&self, other: &Self) -> bool {
@@ -89,7 +89,7 @@ impl From<http::StatusCode> for Error {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub struct IoError(#[source] std::io::Error);
+pub struct IoError(#[source] pub std::io::Error);
 
 impl PartialEq for IoError {
     fn eq(&self, other: &Self) -> bool {
@@ -110,7 +110,7 @@ impl From<std::io::Error> for Error {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub struct JsonError(#[source] pub(crate) serde_json::Error);
+pub struct JsonError(#[source] pub serde_json::Error);
 
 impl fmt::Display for JsonError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -138,16 +138,16 @@ impl From<serde_urlencoded::ser::Error> for Error {
 
 #[derive(Debug, PartialEq, Deserialize)]
 pub struct ApiErrorInner {
-    domain: Option<String>,
-    reason: Option<String>,
-    message: Option<String>,
+    pub domain: Option<String>,
+    pub reason: Option<String>,
+    pub message: Option<String>,
 }
 
 #[derive(Debug, thiserror::Error, PartialEq, Deserialize)]
 pub struct ApiError {
-    code: u16,
-    message: String,
-    errors: Vec<ApiErrorInner>,
+    pub code: u16,
+    pub message: String,
+    pub errors: Vec<ApiErrorInner>,
 }
 
 impl fmt::Display for ApiError {
