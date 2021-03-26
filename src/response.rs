@@ -20,7 +20,7 @@ where
                     if let Ok(api_err) =
                         serde_json::from_slice::<error::ApiError>(resp.body().as_ref())
                     {
-                        return Err(Error::API(api_err));
+                        return Err(Error::Api(api_err));
                     }
                 }
             }
@@ -29,18 +29,6 @@ where
         }
     }
 }
-
-// pub struct Response {
-//     body: bytes::BytesMut,
-//     parts: http::response::Builder,
-// }
-
-// impl Response {
-
-//     pub fn finish(mut self) -> Result<http::Response<bytes::Bytes>, Error> {
-//         Ok(self.parts.body(self.body.freeze())?)
-//     }
-// }
 
 pub struct Response<T> {
     body: bytes::BytesMut,
