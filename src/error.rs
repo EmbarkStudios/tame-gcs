@@ -22,7 +22,7 @@ pub enum Error {
     #[error("An HTTP response didn't have a valid Content-Length")]
     UnknownContentLength,
     #[error("GCS API error")]
-    API(#[source] ApiError),
+    Api(#[source] ApiError),
     #[error("JSON error")]
     Json(#[source] JsonError),
     #[error("Response body doesn't contain enough data")]

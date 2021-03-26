@@ -119,7 +119,7 @@ where
     use serde::de::Deserialize;
 
     let s: &str = Deserialize::deserialize(deserializer)?;
-    Ok(Some(T::from_str(s).map_err(serde::de::Error::custom)?))
+    T::from_str(s).map_err(serde::de::Error::custom).map(Some)
 }
 
 fn from_str<'de, T, D>(deserializer: D) -> Result<T, D::Error>
@@ -131,5 +131,5 @@ where
     use serde::de::Deserialize;
 
     let s: &str = Deserialize::deserialize(deserializer)?;
-    Ok(T::from_str(s).map_err(serde::de::Error::custom)?)
+    T::from_str(s).map_err(serde::de::Error::custom)
 }
