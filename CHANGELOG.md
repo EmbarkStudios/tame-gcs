@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- Renamed `Error::API` => `Error::Api` and `Error::SingingError` => `Error::Signing`.
+- Inner error details for all `Error` variants are now publicly exposed.
+
+### Added
+- [PR#47](https://github.com/EmbarkStudios/tame-gcs/pull/47) added support for the [`object::rewrite`](https://cloud.google.com/storage/docs/json_api/v1/objects/rewrite) operation.
+
 ## [0.9.1] - 2021-01-18
 ### Changed
 - Updated `base64` to `0.13`, aligning with the version used by `rustls`
