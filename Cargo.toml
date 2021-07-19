@@ -49,6 +49,7 @@ url = "2.2"
 [dev-dependencies]
 # Diff view of test failures
 difference = "2.0"
+futures = "0.3"
 futures-test = "0.3"
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
 tokio = { version = "1.0", features = ["macros"] }
