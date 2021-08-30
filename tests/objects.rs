@@ -552,7 +552,7 @@ fn deserializes_partial_rewrite_response() {
         objects::RewriteObjectResponse::try_from(response).expect("parsed rewrite response");
 
     assert_eq!(rewrite_response.total_bytes_rewritten, 435);
-    assert_eq!(rewrite_response.done, false);
+    assert!(!rewrite_response.done);
     assert_eq!(rewrite_response.rewrite_token.unwrap(), "tokendata");
 }
 
@@ -591,7 +591,7 @@ fn deserializes_complete_rewrite_response() {
         objects::RewriteObjectResponse::try_from(response).expect("parsed rewrite response");
 
     assert_eq!(rewrite_response.total_bytes_rewritten, 435);
-    assert_eq!(rewrite_response.done, true);
+    assert!(rewrite_response.done);
     assert_eq!(
         rewrite_response.metadata.unwrap().name.unwrap(),
         "script.sh"
