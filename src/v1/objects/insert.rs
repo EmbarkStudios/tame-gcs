@@ -8,6 +8,7 @@ use crate::{
 use futures_util::{
     io::{AsyncRead, Result as FuturesResult},
     task::{Context, Poll},
+    Stream,
 };
 #[cfg(feature = "async-multipart")]
 use pin_utils::unsafe_pinned;
@@ -290,6 +291,29 @@ impl<B: AsyncRead + Unpin> AsyncRead for Multipart<B> {
         }
 
         Poll::Ready(Ok(total_copied))
+    }
+}
+
+#[cfg(feature = "async-multipart")]
+impl Stream for Multipart<bytes::Bytes> {
+    type Item = bytes::Bytes;
+
+    fn poll_next(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        Poll::Ready(match self.cursor.part {
+            MultipartPart::Prefix => {
+                self.cursor.part.next();
+                Some(self.prefix.clone())
+            }
+            MultipartPart::Body => {
+                self.cursor.part.next();
+                Some(self.body.clone())
+            }
+            MultipartPart::Suffix => {
+                self.cursor.part.next();
+                Some(bytes::Bytes::from(MULTI_PART_SUFFIX))
+            }
+            MultipartPart::End => None,
+        })
     }
 }
 

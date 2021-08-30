@@ -392,6 +392,63 @@ fn insert_multipart_async() {
     util::cmp_strings(&exp_body, &act_body);
 }
 
+#[cfg(feature = "async-multipart")]
+#[test]
+fn insert_multipart_stream_bytes() {
+    use bytes::{BufMut, Bytes, BytesMut};
+
+    let metadata = Metadata {
+        name: Some("good_name".to_owned()),
+        content_type: Some("text/plain".to_owned()),
+        content_encoding: Some("gzip".to_owned()),
+        content_disposition: Some("attachment; filename=\"good name.jpg\"".to_owned()),
+        metadata: Some(
+            ["akey"]
+                .iter()
+                .map(|k| (String::from(*k), format!("{}value", k)))
+                .collect(),
+        ),
+        ..Default::default()
+    };
+
+    let insert_req = Object::insert_multipart(
+        &BucketName::non_validated("bucket"),
+        Bytes::from(TEST_CONTENT),
+        TEST_CONTENT.len() as u64,
+        &metadata,
+        None,
+    )
+    .unwrap();
+
+    let exp_body = format!(
+        "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
+        serde_json::to_string(&metadata).unwrap(),
+        TEST_CONTENT,
+        b = "tame_gcs"
+    );
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
+        .header(http::header::CONTENT_LENGTH, 5758)
+        .body(exp_body)
+        .unwrap();
+
+    let (exp_parts, exp_body) = expected.into_parts();
+    let (act_parts, act_multipart) = insert_req.into_parts();
+
+    util::cmp_strings(&format!("{:#?}", exp_parts), &format!("{:#?}", act_parts));
+
+    let mut act_body = BytesMut::with_capacity(2 * 1024);
+    for chunk in futures::executor::block_on_stream(act_multipart) {
+        act_body.put(chunk);
+    }
+    let act_body = String::from_utf8_lossy(&act_body);
+
+    util::cmp_strings(&exp_body, &act_body);
+}
+
 #[test]
 fn patches() {
     let mut md = std::collections::BTreeMap::new();
