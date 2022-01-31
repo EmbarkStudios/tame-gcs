@@ -19,8 +19,8 @@ pub enum Error {
     Http(#[source] HttpError),
     #[error("HTTP status")]
     HttpStatus(#[source] HttpStatusError),
-    #[error("An HTTP response didn't have a valid Content-Length")]
-    UnknownContentLength,
+    #[error("An HTTP response didn't have a valid {0}")]
+    UnknownHeader(http::header::HeaderName),
     #[error("GCS API error")]
     Api(#[source] ApiError),
     #[error("JSON error")]

@@ -10,6 +10,7 @@ use futures_util::{
     task::{Context, Poll},
     Stream,
 };
+use http::StatusCode;
 #[cfg(feature = "async-multipart")]
 use pin_utils::unsafe_pinned;
 #[cfg(feature = "async-multipart")]
@@ -57,6 +58,20 @@ pub struct InsertResponse {
     pub metadata: super::Metadata,
 }
 
+pub struct InitResumableInsertResponse {
+    pub session_uri: String,
+}
+
+pub enum ResumableInsertResponseMetadata {
+    PartialSize(u64),
+    Complete(Box<super::Metadata>),
+}
+
+// TODO: rethink abt fields' data types
+pub struct ResumableInsertResponse {
+    pub metadata: ResumableInsertResponseMetadata,
+}
+
 impl ApiResponse<&[u8]> for InsertResponse {}
 impl ApiResponse<bytes::Bytes> for InsertResponse {}
 
@@ -70,6 +85,72 @@ where
         let (_parts, body) = response.into_parts();
         let metadata: super::Metadata = serde_json::from_slice(body.as_ref())?;
         Ok(Self { metadata })
+    }
+}
+
+impl ApiResponse<&[u8]> for InitResumableInsertResponse {}
+impl ApiResponse<bytes::Bytes> for InitResumableInsertResponse {}
+
+impl<B> TryFrom<http::Response<B>> for InitResumableInsertResponse
+where
+    B: AsRef<[u8]>,
+{
+    type Error = Error;
+
+    fn try_from(response: http::Response<B>) -> Result<Self, Self::Error> {
+        let (parts, _body) = response.into_parts();
+        match parts.headers.get(http::header::LOCATION) {
+            Some(session_uri) => match session_uri.to_str() {
+                Ok(session_uri) => Ok(Self {
+                    session_uri: session_uri.to_owned(),
+                }),
+                Err(_err) => Err(Error::OpaqueHeaderValue(session_uri.clone())),
+            },
+            None => Err(Error::UnknownHeader(http::header::LOCATION)),
+        }
+    }
+}
+
+impl ApiResponse<&[u8]> for ResumableInsertResponse {}
+impl ApiResponse<bytes::Bytes> for ResumableInsertResponse {}
+
+impl<B> TryFrom<http::Response<B>> for ResumableInsertResponse
+where
+    B: AsRef<[u8]>,
+{
+    type Error = Error;
+
+    fn try_from(response: http::Response<B>) -> Result<Self, Self::Error> {
+        if response.status() == StatusCode::from_u16(308).unwrap() {
+            let (parts, _body) = response.into_parts();
+            let end_pos = match parts.headers.get(http::header::RANGE) {
+                Some(range) => match range.to_str() {
+                    Ok(range) => {
+                        match range.split('-').last() {
+                            Some(pos) => {
+                                let pos = pos.parse::<u64>();
+                                match pos {
+                                    Ok(pos) => Ok(pos),
+                                    Err(_err) => Err(Error::UnknownHeader(http::header::RANGE)), // TODO: better this
+                                }
+                            }
+                            None => Err(Error::UnknownHeader(http::header::RANGE)),
+                        }
+                    }
+                    Err(_err) => Err(Error::OpaqueHeaderValue(range.clone())),
+                },
+                None => Err(Error::UnknownHeader(http::header::RANGE)),
+            }?;
+            Ok(Self {
+                metadata: ResumableInsertResponseMetadata::PartialSize(end_pos + 1),
+            })
+        } else {
+            let (_parts, body) = response.into_parts();
+            let metadata = Box::new(serde_json::from_slice(body.as_ref())?);
+            Ok(Self {
+                metadata: ResumableInsertResponseMetadata::Complete(metadata),
+            })
+        }
     }
 }
 
@@ -428,5 +509,41 @@ impl super::Object {
         }
 
         Ok(req_builder.method("POST").uri(uri).body(multipart)?)
+    }
+
+    pub fn initiate_resumable_insert<'a, OID>(
+        id: &OID,
+        content_type: Option<&str>,
+    ) -> Result<http::Request<()>, Error>
+    where
+        OID: ObjectIdentifier<'a> + ?Sized,
+    {
+        let uri = format!(
+            "https://www.googleapis.com/upload/storage/v1/b/{}/o?uploadType=resumable&name={}",
+            percent_encoding::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET,),
+            percent_encoding::percent_encode(id.object().as_ref(), crate::util::QUERY_ENCODE_SET,),
+        );
+
+        let req_builder = http::Request::builder()
+            .header(http::header::CONTENT_LENGTH, 0u64)
+            .header(
+                http::header::HeaderName::from_static("x-upload-content-type"),
+                http::header::HeaderValue::from_str(
+                    content_type.unwrap_or("application/octet-stream"),
+                )
+                .map_err(http::Error::from)?,
+            );
+
+        Ok(req_builder.method("POST").uri(uri).body(())?)
+    }
+
+    pub fn resumable_insert<B>(
+        session_uri: String,
+        content: B,
+        length: u64,
+    ) -> Result<http::Request<B>, Error> {
+        let req_builder = http::Request::builder().header(http::header::CONTENT_LENGTH, length);
+
+        Ok(req_builder.method("PUT").uri(session_uri).body(content)?)
     }
 }
