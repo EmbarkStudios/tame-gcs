@@ -143,10 +143,19 @@ where
             names
         };
 
-        let timestamp = chrono::Utc::now();
+        let timestamp = time::OffsetDateTime::now_utc();
 
-        // YYYYMMDD'T'HHMMSS'Z'
-        let request_timestamp = timestamp.format("%Y%m%dT%H%M%SZ").to_string();
+        // The date and time the signed URL became usable, in the ISO 8601 basic format YYYYMMDD'T'HHMMSS'Z'.
+        let request_timestamp = {
+            let year = timestamp.year();
+            let month = timestamp.month() as u8;
+            let day = timestamp.day();
+            let hour = timestamp.hour();
+            let minute = timestamp.minute();
+            let second = timestamp.second();
+
+            format!("{year:04}{month:02}:{day:02}T{hour:02}{minute:02}{second:02}Z")
+        };
         // YYYYMMDD
         let datestamp = &request_timestamp[..8];
 

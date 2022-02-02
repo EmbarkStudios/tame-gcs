@@ -22,9 +22,10 @@ deny = [
     { name = "openssl-sys" },
 ]
 skip = [
+    # hyper uses an old version...and the newest version
+    { name = "itoa", version = "=0.4.8" },
 ]
-skip-tree = [
-]
+skip-tree = []
 
 [licenses]
 unlicensed = "deny"
@@ -33,6 +34,7 @@ confidence-threshold = 0.92
 allow = [
     "Apache-2.0",
     "MIT",
+    "BSD-3-Clause",
 ]
 exceptions = [
     { allow = ["MPL-2.0"], name = "webpki-roots" },
@@ -62,3 +64,8 @@ expression = "ISC"
 license-files = [
     { path = "LICENSE", hash = 0x001c7e6c },
 ]
+
+[[licenses.clarify]]
+name = "encoding_rs"
+expression = "(Apache-2.0 OR MIT) AND BSD-3-Clause"
+license-files = [{ path = "COPYRIGHT", hash = 0x39f8ad31 }]

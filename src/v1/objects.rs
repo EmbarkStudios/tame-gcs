@@ -31,6 +31,8 @@ pub use list::*;
 pub use patch::*;
 pub use rewrite::*;
 
+pub type Timestamp = time::OffsetDateTime;
+
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
 pub struct Object;
@@ -72,18 +74,18 @@ pub struct Metadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_encoding: Option<String>,
     /// The creation time of the object in RFC 3339 format.
-    #[serde(skip_serializing)]
-    pub time_created: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    pub time_created: Option<Timestamp>,
     /// The modification time of the object metadata in RFC 3339 format.
-    #[serde(skip_serializing)]
-    pub updated: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    pub updated: Option<Timestamp>,
     /// Storage class of the object. **writable**
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage_class: Option<StorageClass>,
     /// The time at which the object's storage class was last changed.
     /// When the object is initially created, it will be set to timeCreated.
-    #[serde(skip_serializing)]
-    pub time_storage_class_updated: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    pub time_storage_class_updated: Option<Timestamp>,
     /// `Content-Length` of the data in bytes.
     #[serde(default, skip_serializing, deserialize_with = "from_str_opt")]
     pub size: Option<u64>,
@@ -110,14 +112,14 @@ pub struct Metadata {
     pub metadata: Option<BTreeMap<String, String>>,
 }
 
+use serde::de::Deserialize;
+
 fn from_str_opt<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
 where
     T: std::str::FromStr,
     T::Err: std::fmt::Display,
     D: serde::de::Deserializer<'de>,
 {
-    use serde::de::Deserialize;
-
     let s: &str = Deserialize::deserialize(deserializer)?;
     T::from_str(s).map_err(serde::de::Error::custom).map(Some)
 }
@@ -128,8 +130,16 @@ where
     T::Err: std::fmt::Display,
     D: serde::de::Deserializer<'de>,
 {
-    use serde::de::Deserialize;
-
     let s: &str = Deserialize::deserialize(deserializer)?;
     T::from_str(s).map_err(serde::de::Error::custom)
+}
+
+fn timestamp_rfc3339_opt<'de, D>(deserializer: D) -> Result<Option<Timestamp>, D::Error>
+where
+    D: serde::de::Deserializer<'de>,
+{
+    let ts_str: &str = Deserialize::deserialize(deserializer)?;
+    Timestamp::parse(ts_str, &time::format_description::well_known::Rfc3339)
+        .map_err(serde::de::Error::custom)
+        .map(Some)
 }
