@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Fixed
+- [PR#53](https://github.com/EmbarkStudios/tame-gcs/pull/53) fixed a bug in deserialization introduced by [PR#52](https://github.com/EmbarkStudios/tame-gcs/pull/52).
+
 ## [0.11.0] - 2022-02-02
 ### Added
 - [PR#51](https://github.com/EmbarkStudios/tame-gcs/pull/51) implemented `futures_util::Stream` for `Multipart<Bytes>`. Thanks [@shikhar](https://github.com/shikhar)!
