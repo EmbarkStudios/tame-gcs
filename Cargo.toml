@@ -12,6 +12,7 @@ documentation = "https://docs.rs/tame-gcs"
 homepage = "https://github.com/EmbarkStudios/tame-gcs"
 repository = "https://github.com/EmbarkStudios/tame-gcs"
 keywords = ["gcs", "tame", "sans-io", "storage", "gcp"]
+categories = ["database"]
 readme = "README.md"
 exclude = [
   # End users don't want the JSON schemas
