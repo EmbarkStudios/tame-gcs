@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.11.1] - 2022-02-02
 ### Fixed
 - [PR#53](https://github.com/EmbarkStudios/tame-gcs/pull/53) fixed a bug in deserialization introduced by [PR#52](https://github.com/EmbarkStudios/tame-gcs/pull/52).
 
@@ -146,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.1...HEAD
+[0.11.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.0...0.11.1
 [0.11.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.9.1...0.10.0
 [0.9.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.9.0...0.9.1
