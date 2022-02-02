@@ -74,17 +74,17 @@ pub struct Metadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_encoding: Option<String>,
     /// The creation time of the object in RFC 3339 format.
-    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    #[serde(default, skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
     pub time_created: Option<Timestamp>,
     /// The modification time of the object metadata in RFC 3339 format.
-    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    #[serde(default, skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
     pub updated: Option<Timestamp>,
     /// Storage class of the object. **writable**
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage_class: Option<StorageClass>,
     /// The time at which the object's storage class was last changed.
     /// When the object is initially created, it will be set to timeCreated.
-    #[serde(skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
+    #[serde(default, skip_serializing, deserialize_with = "timestamp_rfc3339_opt")]
     pub time_storage_class_updated: Option<Timestamp>,
     /// `Content-Length` of the data in bytes.
     #[serde(default, skip_serializing, deserialize_with = "from_str_opt")]
