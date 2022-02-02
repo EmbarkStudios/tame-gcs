@@ -1,14 +1,18 @@
 [package]
 name = "tame-gcs"
 version = "0.10.0"
-authors = ["Embark <opensource@embark-studios.com>", "Jake Shadle <jake.shadle@embark-studios.com>"]
-edition = "2018"
+authors = [
+  "Embark <opensource@embark-studios.com>",
+  "Jake Shadle <jake.shadle@embark-studios.com>",
+]
+edition = "2021"
 description = "A small library with a limited set of Google Cloud Storage operations"
 license = "MIT OR Apache-2.0"
 documentation = "https://docs.rs/tame-gcs"
 homepage = "https://github.com/EmbarkStudios/tame-gcs"
 repository = "https://github.com/EmbarkStudios/tame-gcs"
 keywords = ["gcs", "tame", "sans-io", "storage", "gcp"]
+categories = ["database"]
 readme = "README.md"
 exclude = [
   # End users don't want the JSON schemas
@@ -32,9 +36,10 @@ async-multipart = ["futures-util", "pin-utils"]
 doctest = false
 
 [dependencies]
-base64 = "0.13" # Follows version used by rustls
-bytes = "1.0" # Follows version used by http
-chrono = { version = "0.4", features = ["serde"] }
+# Follows version used by rustls
+base64 = "0.13"
+# Follows version used by http
+bytes = "1.0"
 futures-util = { version = "0.3", optional = true, features = ["io"] }
 http = "0.2"
 percent-encoding = "2.1"
@@ -44,6 +49,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_urlencoded = "0.7"
 thiserror = "1.0"
+time = { version = "0.3", features = ["parsing"] }
 url = "2.2"
 
 [dev-dependencies]
@@ -51,5 +57,8 @@ url = "2.2"
 difference = "2.0"
 futures = "0.3"
 futures-test = "0.3"
-reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
+reqwest = { version = "0.11", default-features = false, features = [
+  "rustls-tls",
+] }
+time = { version = "0.3", features = ["macros"] }
 tokio = { version = "1.0", features = ["macros"] }

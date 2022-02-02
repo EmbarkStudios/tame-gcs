@@ -45,7 +45,7 @@ where
     pub fn new(parts: http::response::Builder) -> Self {
         let body = match parts
             .headers_ref()
-            .and_then(|hm| crate::util::get_content_length(hm))
+            .and_then(crate::util::get_content_length)
         {
             Some(u) => bytes::BytesMut::with_capacity(u),
             None => bytes::BytesMut::new(),

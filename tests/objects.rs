@@ -517,6 +517,14 @@ fn parses_patch_response() {
         objects::PatchObjectResponse::try_from(response).expect("parsed patch response");
 
     assert_eq!(patch_response.metadata.metadata.unwrap().len(), 10);
+    assert_eq!(
+        patch_response.metadata.time_created.unwrap(),
+        time::macros::datetime!(2020-06-09 13:15:11.706 UTC)
+    );
+    assert_eq!(
+        patch_response.metadata.updated.unwrap(),
+        time::macros::datetime!(2020-06-09 13:20:53.073 UTC)
+    );
 }
 
 #[test]

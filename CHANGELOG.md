@@ -1,3 +1,5 @@
+<!-- markdownlint-disable blanks-around-headings blanks-around-lists no-duplicate-heading -->
+
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -6,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Added
+- [PR#51](https://github.com/EmbarkStudios/tame-gcs/pull/51) implemented `futures_util::Stream` for `Multipart<Bytes>`. Thanks [@shikhar](https://github.com/shikhar)!
+
+### Changed
+- [PR#52](https://github.com/EmbarkStudios/tame-gcs/pull/52) replaced `chrono` with `time` due to maintenance issues with `chrono`.
+
 ## [0.10.0] - 2021-03-26
 ### Changed
 - Renamed `Error::API` => `Error::Api` and `Error::SingingError` => `Error::Signing`.

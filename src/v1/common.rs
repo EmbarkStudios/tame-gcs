@@ -9,7 +9,7 @@ fn pretty_on(pretty_print: &bool) -> bool {
 
 /// [Standard Query Parameters](https://cloud.google.com/storage/docs/json_api/v1/parameters#query)
 /// can be used in almost any API request to GCS
-#[derive(Serialize)]
+#[derive(Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StandardQueryParameters<'a> {
     /// Selector specifying a subset of fields to include in the response,
@@ -36,17 +36,6 @@ pub struct StandardQueryParameters<'a> {
     /// See more about [Capping API usage](https://cloud.google.com/apis/docs/capping-api-usage)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_ip: Option<&'a str>,
-}
-
-impl<'a> Default for StandardQueryParameters<'a> {
-    fn default() -> Self {
-        Self {
-            fields: None,
-            pretty_print: false,
-            quota_user: None,
-            user_ip: None,
-        }
-    }
 }
 
 /// Contains common conditionals that determite whether an operation
