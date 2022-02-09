@@ -154,7 +154,7 @@ where
             let minute = timestamp.minute();
             let second = timestamp.second();
 
-            format!("{year:04}{month:02}:{day:02}T{hour:02}{minute:02}{second:02}Z")
+            format!("{year:04}{month:02}{day:02}T{hour:02}{minute:02}{second:02}Z")
         };
         // YYYYMMDD
         let datestamp = &request_timestamp[..8];
