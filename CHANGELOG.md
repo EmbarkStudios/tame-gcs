@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.11.2] - 2022-02-09
 ### Fixed
 - [PR#55](https://github.com/EmbarkStudios/tame-gcs/pull/55) fixed a bug in signed url creation caused by a stray character in the timestamp string.
 
@@ -150,7 +151,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.1...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.2...HEAD
+[0.11.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.1...0.11.2
 [0.11.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.0...0.11.1
 [0.11.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.9.1...0.10.0
