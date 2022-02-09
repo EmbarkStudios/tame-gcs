@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Fixed
+- [PR#55](https://github.com/EmbarkStudios/tame-gcs/pull/55) fixed a bug in signed url creation caused by a stray character in the timestamp string.
+
 ## [0.11.1] - 2022-02-02
 ### Fixed
 - [PR#53](https://github.com/EmbarkStudios/tame-gcs/pull/53) fixed a bug in deserialization introduced by [PR#52](https://github.com/EmbarkStudios/tame-gcs/pull/52).
