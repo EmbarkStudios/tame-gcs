@@ -35,7 +35,7 @@ pub enum Error {
     TooLongExpiration { requested: u64, max: u64 },
     #[error("Failed to parse url")]
     UrlParse(#[source] url::ParseError),
-    #[error("Unable to stringize header value '{0:?}'")]
+    #[error("Unable to stringize or parse header value '{0:?}'")]
     OpaqueHeaderValue(http::header::HeaderValue),
     #[error("I/O error occurred")]
     Io(#[source] IoError),

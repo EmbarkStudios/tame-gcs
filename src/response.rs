@@ -13,9 +13,8 @@ where
         if status.is_success() || status == StatusCode::from_u16(308).unwrap() {
             Self::try_from(resp)
         } else {
-            // If we get an error, but with a JSON payload, attempt to deserialize
+            // If we get an error, but with a JSON or plain text payload, attempt to deserialize
             // an ApiError from it, otherwise fallback to the simple HttpStatus
-            // TODO: update ^ desc
             if let Some(ct) = resp
                 .headers()
                 .get(http::header::CONTENT_TYPE)

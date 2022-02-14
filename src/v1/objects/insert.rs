@@ -58,16 +58,18 @@ pub struct InsertResponse {
     pub metadata: super::Metadata,
 }
 
+// TODO: add doc comment
 pub struct InitResumableInsertResponse {
     pub session_uri: String,
 }
 
+// TODO: add doc comment
 pub enum ResumableInsertResponseMetadata {
     PartialSize(u64),
     Complete(Box<super::Metadata>),
 }
 
-// TODO: rethink abt fields' data types
+// TODO: add doc comment
 pub struct ResumableInsertResponse {
     pub metadata: ResumableInsertResponseMetadata,
 }
@@ -124,20 +126,18 @@ where
         if response.status() == StatusCode::from_u16(308).unwrap() {
             let (parts, _body) = response.into_parts();
             let end_pos = match parts.headers.get(http::header::RANGE) {
-                Some(range) => match range.to_str() {
-                    Ok(range) => {
-                        match range.split('-').last() {
-                            Some(pos) => {
-                                let pos = pos.parse::<u64>();
-                                match pos {
-                                    Ok(pos) => Ok(pos),
-                                    Err(_err) => Err(Error::UnknownHeader(http::header::RANGE)), // TODO: better this
-                                }
+                Some(range_val) => match range_val.to_str() {
+                    Ok(range) => match range.split('-').last() {
+                        Some(pos) => {
+                            let pos = pos.parse::<u64>();
+                            match pos {
+                                Ok(pos) => Ok(pos),
+                                Err(_err) => Err(Error::OpaqueHeaderValue(range_val.clone())),
                             }
-                            None => Err(Error::UnknownHeader(http::header::RANGE)),
                         }
-                    }
-                    Err(_err) => Err(Error::OpaqueHeaderValue(range.clone())),
+                        None => Err(Error::UnknownHeader(http::header::RANGE)),
+                    },
+                    Err(_err) => Err(Error::OpaqueHeaderValue(range_val.clone())),
                 },
                 None => Err(Error::UnknownHeader(http::header::RANGE)),
             }?;
@@ -511,7 +511,8 @@ impl super::Object {
         Ok(req_builder.method("POST").uri(uri).body(multipart)?)
     }
 
-    pub fn initiate_resumable_insert<'a, OID>(
+    // TODO: add doc comment
+    pub fn init_resumable_insert<'a, OID>(
         id: &OID,
         content_type: Option<&str>,
     ) -> Result<http::Request<()>, Error>
@@ -537,6 +538,7 @@ impl super::Object {
         Ok(req_builder.method("POST").uri(uri).body(())?)
     }
 
+    // TODO: add doc comment
     pub fn resumable_insert<B>(
         session_uri: String,
         content: B,
