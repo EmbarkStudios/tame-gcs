@@ -1,19 +1,15 @@
-use http::StatusCode;
-
-use crate::error::{self, ApiError, Error};
+use crate::error::{self, Error};
 use std::convert::TryFrom;
-use std::str;
 
 pub trait ApiResponse<B>: Sized + TryFrom<http::Response<B>, Error = Error>
 where
     B: AsRef<[u8]>,
 {
     fn try_from_parts(resp: http::response::Response<B>) -> Result<Self, Error> {
-        let status = resp.status();
-        if status.is_success() || status == StatusCode::from_u16(308).unwrap() {
+        if resp.status().is_success() {
             Self::try_from(resp)
         } else {
-            // If we get an error, but with a JSON or plain text payload, attempt to deserialize
+            // If we get an error, but with a JSON payload, attempt to deserialize
             // an ApiError from it, otherwise fallback to the simple HttpStatus
             if let Some(ct) = resp
                 .headers()
@@ -24,15 +20,6 @@ where
                     if let Ok(api_err) =
                         serde_json::from_slice::<error::ApiError>(resp.body().as_ref())
                     {
-                        return Err(Error::Api(api_err));
-                    }
-                } else if ct.starts_with("text/plain") && !resp.body().as_ref().is_empty() {
-                    if let Ok(message) = str::from_utf8(resp.body().as_ref()) {
-                        let api_err = ApiError {
-                            code: status.into(),
-                            message: message.to_owned(),
-                            errors: vec![],
-                        };
                         return Err(Error::Api(api_err));
                     }
                 }
