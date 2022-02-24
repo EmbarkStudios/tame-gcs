@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.11.3] - 2022-02-24
 ### Added
 - [PR#54](https://github.com/EmbarkStudios/tame-gcs/pull/54) added support for [resumable uploads](https://cloud.google.com/storage/docs/resumable-uploads). Thanks [@yottabytt](https://github.com/yottabytt)!
 
@@ -154,7 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.2...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.3...HEAD
+[0.11.3]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.2...0.11.3
 [0.11.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.1...0.11.2
 [0.11.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.0...0.11.1
 [0.11.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.10.0...0.11.0
