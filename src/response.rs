@@ -24,7 +24,6 @@ where
                     }
                 }
             }
-
             Err(Error::from(resp.status()))
         }
     }
