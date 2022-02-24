@@ -18,6 +18,7 @@ pub fn requests_eq<AB: std::fmt::Debug, EB: std::fmt::Debug>(
     cmp_strings(&expected, &actual);
 }
 
+#[allow(dead_code)]
 pub fn requests_read_eq<AB: Read, EB: Read>(actual: Request<AB>, expected: Request<EB>) {
     let (ap, mut ab) = actual.into_parts();
     let (ep, mut eb) = expected.into_parts();

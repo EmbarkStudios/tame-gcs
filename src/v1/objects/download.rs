@@ -4,7 +4,7 @@ use crate::{
     response::ApiResponse,
     types::ObjectIdentifier,
 };
-use std::{convert::TryFrom, io};
+use std::io;
 
 #[derive(Default, Serialize)]
 #[serde(rename_all = "camelCase")]
