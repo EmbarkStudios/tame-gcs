@@ -1,7 +1,6 @@
 #![cfg(feature = "signing")]
 
 use reqwest::Client;
-use std::convert::TryFrom;
 use tame_gcs::{signed_url, signing, BucketName, ObjectName};
 
 struct Input {

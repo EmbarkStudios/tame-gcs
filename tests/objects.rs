@@ -1,4 +1,3 @@
-use std::convert::TryFrom;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},
     objects::{self, DeleteObjectOptional, InsertObjectOptional, Metadata, Object},

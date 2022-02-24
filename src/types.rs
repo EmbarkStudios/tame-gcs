@@ -1,7 +1,7 @@
 //! Helper types for working with GCS
 
 use crate::error::Error;
-use std::{borrow::Cow, convert::TryFrom};
+use std::borrow::Cow;
 
 /// A wrapper around strings meant to be used as bucket names,
 /// to validate they conform to [Bucket Name Requirements](https://cloud.google.com/storage/docs/naming#requirements)

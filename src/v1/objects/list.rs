@@ -4,7 +4,6 @@ use crate::{
     response::ApiResponse,
     types::BucketName,
 };
-use std::convert::TryFrom;
 
 #[derive(Default, Serialize)]
 #[serde(rename_all = "camelCase")]

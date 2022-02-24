@@ -15,7 +15,7 @@ use http::StatusCode;
 use pin_utils::unsafe_pinned;
 #[cfg(feature = "async-multipart")]
 use std::pin::Pin;
-use std::{convert::TryFrom, io, str};
+use std::{io, str};
 
 /// Optional parameters when inserting an object.
 /// See [here](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#parameters)

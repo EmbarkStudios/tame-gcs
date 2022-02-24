@@ -1,5 +1,4 @@
 use crate::error::{self, Error};
-use std::convert::TryFrom;
 
 pub trait ApiResponse<B>: Sized + TryFrom<http::Response<B>, Error = Error>
 where
