@@ -95,7 +95,7 @@ impl ServiceAccount {
 
         let key_string = info
             .private_key
-            .splitn(5, "-----")
+            .split("-----")
             .nth(2)
             .ok_or_else(|| Error::KeyRejected("invalid key format".to_owned()))?;
 
