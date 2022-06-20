@@ -203,6 +203,7 @@ impl Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/insert)
     pub fn insert_multipart<B>(
+        &self,
         bucket: &BucketName<'_>,
         content: B,
         length: u64,
@@ -223,7 +224,8 @@ impl Object {
         };
 
         let mut uri = format!(
-            "https://www.googleapis.com/upload/storage/v1/b/{}/o?uploadType=multipart",
+            "https://{}/upload/storage/v1/b/{}/o?uploadType=multipart",
+            self.authority.as_str(),
             percent_encoding::percent_encode(bucket.as_ref(), crate::util::PATH_ENCODE_SET,),
         );
 

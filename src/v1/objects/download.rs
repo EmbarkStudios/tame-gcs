@@ -75,6 +75,7 @@ impl super::Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/get)
     pub fn download<'a, OID>(
+        &self,
         id: &OID,
         optional: Option<DownloadObjectOptional<'_>>,
     ) -> Result<http::Request<std::io::Empty>, Error>
@@ -82,7 +83,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = crate::__make_obj_url!(
-            "https://www.googleapis.com/storage/v1/b/{}/o/{}?alt=media",
+            "https://{}/storage/v1/b/{}/o/{}?alt=media",
+            self.authority,
             id
         );
 

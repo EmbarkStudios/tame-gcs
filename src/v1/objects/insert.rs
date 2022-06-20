@@ -81,6 +81,7 @@ impl super::Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/insert)
     pub fn insert_simple<'a, OID, B>(
+        &self,
         id: &OID,
         content: B,
         length: u64,
@@ -90,7 +91,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = format!(
-            "https://www.googleapis.com/upload/storage/v1/b/{}/o?name={}&uploadType=media",
+            "https://{}/upload/storage/v1/b/{}/o?name={}&uploadType=media",
+            self.authority.as_str(),
             percent_encoding::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET,),
             percent_encoding::percent_encode(id.object().as_ref(), crate::util::QUERY_ENCODE_SET,),
         );
