@@ -1,6 +1,7 @@
 //! Types and APIs for interacting with GCS [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
 
 use crate::common::StorageClass;
+use http::uri::Authority;
 use std::collections::BTreeMap;
 
 #[doc(hidden)]
@@ -27,7 +28,6 @@ mod rewrite;
 pub use delete::*;
 pub use download::*;
 pub use get::*;
-use http::uri::Authority;
 pub use insert::*;
 pub use list::*;
 pub use patch::*;
@@ -37,6 +37,8 @@ pub type Timestamp = time::OffsetDateTime;
 
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
+/// Additionally, it can also be used to specify a custom authority.
+#[derive(Clone, Debug)]
 pub struct Object {
     authority: Authority,
 }

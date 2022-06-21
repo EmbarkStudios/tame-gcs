@@ -1,3 +1,4 @@
+use http::uri::Authority;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},
     objects::{self, DeleteObjectOptional, InsertObjectOptional, Metadata, Object},
@@ -23,6 +24,31 @@ fn insert_vanilla() {
     let expected = http::Request::builder()
         .method(http::Method::POST)
         .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "application/octet-stream")
+        .header(http::header::CONTENT_LENGTH, 13)
+        .body("great content")
+        .unwrap();
+
+    util::requests_eq(&insert_req, &expected);
+}
+
+#[test]
+fn insert_vanilla_using_custom_authority() {
+    let insert_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+        .insert_simple(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            "great content",
+            13,
+            None,
+        )
+        .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://0.0.0.0:4443/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "application/octet-stream")
         .header(http::header::CONTENT_LENGTH, 13)
         .body("great content")
@@ -69,6 +95,24 @@ fn vanilla_get() {
     let expected = http::Request::builder()
         .method(http::Method::GET)
         .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
+        .body(std::io::empty())
+        .unwrap();
+
+    util::requests_eq(&get_req, &expected);
+}
+
+#[test]
+fn vanilla_get_using_custom_authority() {
+    let get_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+        .get(
+            &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
+            None,
+        )
+        .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::GET)
+        .uri("https://0.0.0.0:4443/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
         .body(std::io::empty())
         .unwrap();
 
