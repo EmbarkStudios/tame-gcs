@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.12.0] - 2022-06-22
 ### Changed
 - [PR#59](https://github.com/EmbarkStudios/tame-gcs/pull/59) resolved [#21](https://github.com/EmbarkStudios/tame-gcs/issues/21) by changing `Object` to include an `http::uri::Authority`, defaulting to `storage.googleapis.com`, which allows you to specify your own custom GCS host. Thanks [@yottabytt](https://github.com/yottabytt)!
 
@@ -158,7 +159,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.3...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.0...HEAD
+[0.12.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.3...0.12.0
 [0.11.3]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.2...0.11.3
 [0.11.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.1...0.11.2
 [0.11.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.0...0.11.1
