@@ -74,24 +74,22 @@ where
         // PATH_TO_RESOURCE
         // CANONICAL_QUERY_STRING
         // CANONICAL_HEADERS
-        let mut signed_url =
-            Url::parse("https://storage.googleapis.com").map_err(Error::UrlParse)?;
-
         // https://cloud.google.com/storage/docs/authentication/canonical-requests#about-resource-path
         let resource_path = format!(
             "/{}/{}",
             perc_enc::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
-            perc_enc::percent_encode(id.object().as_ref(), crate::util::PATH_ENCODE_SET),
+            perc_enc::percent_encode(id.object().as_ref(), crate::util::PATH_ENCODE_SET)
         );
 
-        signed_url.set_path(&resource_path);
+        let mut signed_url = Url::parse(&format!("https://{}{resource_path}", optional.authority))
+            .map_err(Error::UrlParse)?;
 
         let mut headers = optional.headers;
 
         // `host` is always required
         headers.insert(
             http::header::HOST,
-            http::header::HeaderValue::from_static("storage.googleapis.com"),
+            http::header::HeaderValue::from_str(optional.authority.host())?,
         );
 
         // Eliminate duplicate header names by creating one header name with a comma-separated list of values.
@@ -268,6 +266,8 @@ where
 
 /// Optional parameters that can be used to tweak url signing
 pub struct SignedUrlOptional<'a> {
+    /// The authority componenent of the signing URL.
+    pub authority: http::uri::Authority,
     /// The HTTP method for the request to sign. Defaults to 'GET'.
     pub method: http::Method,
     /// The lifetime of the signed URL, as measured from the DateTime of the
@@ -285,6 +285,7 @@ pub struct SignedUrlOptional<'a> {
 impl<'a> Default for SignedUrlOptional<'a> {
     fn default() -> Self {
         Self {
+            authority: http::uri::Authority::from_static("storage.googleapis.com"),
             method: http::Method::GET,
             duration: std::time::Duration::from_secs(60 * 60),
             headers: http::HeaderMap::default(),

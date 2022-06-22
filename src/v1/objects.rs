@@ -44,12 +44,15 @@ pub struct Object {
 }
 
 impl Object {
+    /// Supplies a custom HTTP authority, allowing a GCS host other than the
+    /// standard `storage.googleapis.com` to be used
     pub fn with_authority(authority: Authority) -> Self {
         Self { authority }
     }
 }
 
 impl Default for Object {
+    /// Defaults to the standard GCS location `storage.googleapis.com`
     fn default() -> Self {
         Self {
             authority: Authority::from_static("storage.googleapis.com"),
