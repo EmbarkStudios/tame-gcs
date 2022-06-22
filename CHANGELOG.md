@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- [PR#59](https://github.com/EmbarkStudios/tame-gcs/pull/59) resolved [#21](https://github.com/EmbarkStudios/tame-gcs/issues/21) by changing `Object` to include an `http::uri::Authority`, defaulting to `storage.googleapis.com`, which allows you to specify your own custom GCS host. Thanks [@yottabytt](https://github.com/yottabytt)!
+
 ## [0.11.3] - 2022-02-24
 ### Added
 - [PR#54](https://github.com/EmbarkStudios/tame-gcs/pull/54) added support for [resumable uploads](https://cloud.google.com/storage/docs/resumable-uploads). Thanks [@yottabytt](https://github.com/yottabytt)!

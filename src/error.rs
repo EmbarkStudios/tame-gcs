@@ -17,6 +17,8 @@ pub enum Error {
     InvalidSequence(&'static str),
     #[error("Failed to parse URI")]
     InvalidUri(UriError),
+    #[error("Header value is invalid")]
+    InvalidHeaderValue,
     #[error("HTTP error")]
     Http(#[source] HttpError),
     #[error("HTTP status")]
@@ -65,7 +67,7 @@ impl PartialEq for HttpError {
 
 impl From<http::Error> for Error {
     fn from(e: http::Error) -> Self {
-        Error::Http(HttpError(e))
+        Self::Http(HttpError(e))
     }
 }
 
@@ -86,7 +88,13 @@ impl fmt::Display for HttpStatusError {
 
 impl From<http::StatusCode> for Error {
     fn from(e: http::StatusCode) -> Self {
-        Error::HttpStatus(HttpStatusError(e))
+        Self::HttpStatus(HttpStatusError(e))
+    }
+}
+
+impl From<http::header::InvalidHeaderValue> for Error {
+    fn from(_: http::header::InvalidHeaderValue) -> Self {
+        Self::InvalidHeaderValue
     }
 }
 
@@ -107,7 +115,7 @@ impl fmt::Display for IoError {
 
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
-        Error::Io(IoError(e))
+        Self::Io(IoError(e))
     }
 }
 
@@ -128,13 +136,13 @@ impl PartialEq for JsonError {
 
 impl From<serde_json::Error> for Error {
     fn from(e: serde_json::Error) -> Self {
-        Error::Json(JsonError(e))
+        Self::Json(JsonError(e))
     }
 }
 
 impl From<serde_urlencoded::ser::Error> for Error {
     fn from(e: serde_urlencoded::ser::Error) -> Self {
-        Error::UrlEncode(e)
+        Self::UrlEncode(e)
     }
 }
 
@@ -157,7 +165,7 @@ impl PartialEq for UriError {
 
 impl From<http::uri::InvalidUri> for Error {
     fn from(e: http::uri::InvalidUri) -> Self {
-        Error::InvalidUri(UriError(e))
+        Self::InvalidUri(UriError(e))
     }
 }
 
@@ -184,13 +192,13 @@ impl fmt::Display for ApiError {
 #[cfg(feature = "signing")]
 impl From<ring::error::KeyRejected> for Error {
     fn from(re: ring::error::KeyRejected) -> Self {
-        Error::KeyRejected(format!("{}", re))
+        Self::KeyRejected(format!("{}", re))
     }
 }
 
 #[cfg(feature = "signing")]
 impl From<ring::error::Unspecified> for Error {
     fn from(_re: ring::error::Unspecified) -> Self {
-        Error::Signing
+        Self::Signing
     }
 }
