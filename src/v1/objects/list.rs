@@ -109,10 +109,15 @@ impl super::Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/list)
     pub fn list(
+        &self,
         bucket: &BucketName<'_>,
         optional: Option<ListOptional<'_>>,
     ) -> Result<http::Request<std::io::Empty>, Error> {
-        let mut uri = format!("https://www.googleapis.com/storage/v1/b/{}/o", bucket);
+        let mut uri = format!(
+            "https://{}/storage/v1/b/{}/o",
+            self.authority.as_str(),
+            bucket
+        );
 
         let query = optional.unwrap_or_default();
         let query_params = serde_urlencoded::to_string(query)?;

@@ -44,6 +44,7 @@ impl super::Object {
     ///
     /// [Complete API documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/patch)
     pub fn patch<'a, OID>(
+        &self,
         id: &OID,
         metadata: &super::Metadata,
         optional: Option<PatchObjectOptional<'_>>,
@@ -51,8 +52,7 @@ impl super::Object {
     where
         OID: ObjectIdentifier<'a> + ?Sized,
     {
-        let mut uri =
-            crate::__make_obj_url!("https://storage.googleapis.com/storage/v1/b/{}/o/{}", id);
+        let mut uri = crate::__make_obj_url!("https://{}/storage/v1/b/{}/o/{}", self.authority, id);
 
         let query = optional.unwrap_or_default();
         let query_params = serde_urlencoded::to_string(query)?;

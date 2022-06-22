@@ -195,6 +195,7 @@ impl Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/performing-resumable-uploads#initiate-session)
     pub fn resumable_insert_init<'a, OID>(
+        &self,
         id: &OID,
         content_type: Option<&str>,
     ) -> Result<http::Request<()>, Error>
@@ -202,7 +203,8 @@ impl Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let uri = format!(
-            "https://www.googleapis.com/upload/storage/v1/b/{}/o?uploadType=resumable&name={}",
+            "https://{}/upload/storage/v1/b/{}/o?uploadType=resumable&name={}",
+            self.authority.as_str(),
             percent_encoding::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET,),
             percent_encoding::percent_encode(id.object().as_ref(), crate::util::QUERY_ENCODE_SET,),
         );

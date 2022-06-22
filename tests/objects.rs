@@ -1,3 +1,4 @@
+use http::uri::Authority;
 use tame_gcs::{
     common::{Conditionals, StandardQueryParameters},
     objects::{self, DeleteObjectOptional, InsertObjectOptional, Metadata, Object},
@@ -8,20 +9,46 @@ mod util;
 
 #[test]
 fn insert_vanilla() {
-    let insert_req = Object::insert_simple(
-        &(
-            &BucketName::non_validated("bucket"),
-            &ObjectName::non_validated("object/with/deep/path"),
-        ),
-        "great content",
-        13,
-        None,
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .insert_simple(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            "great content",
+            13,
+            None,
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "application/octet-stream")
+        .header(http::header::CONTENT_LENGTH, 13)
+        .body("great content")
+        .unwrap();
+
+    util::requests_eq(&insert_req, &expected);
+}
+
+#[test]
+fn insert_vanilla_using_custom_authority() {
+    let insert_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+        .insert_simple(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            "great content",
+            13,
+            None,
+        )
+        .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("https://0.0.0.0:4443/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "application/octet-stream")
         .header(http::header::CONTENT_LENGTH, 13)
         .body("great content")
@@ -32,21 +59,22 @@ fn insert_vanilla() {
 
 #[test]
 fn insert_json_content() {
-    let insert_req = Object::insert_simple(
-        &ObjectId::new("bucket", "json").unwrap(),
-        r#"{"data":23}"#,
-        11,
-        Some(InsertObjectOptional {
-            content_type: Some("application/json"),
-            content_encoding: Some("identity"),
-            ..Default::default()
-        }),
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .insert_simple(
+            &ObjectId::new("bucket", "json").unwrap(),
+            r#"{"data":23}"#,
+            11,
+            Some(InsertObjectOptional {
+                content_type: Some("application/json"),
+                content_encoding: Some("identity"),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?name=json&uploadType=media&prettyPrint=false&contentEncoding=identity")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?name=json&uploadType=media&prettyPrint=false&contentEncoding=identity")
         .header(http::header::CONTENT_TYPE, "application/json")
         .header(http::header::CONTENT_LENGTH, 11)
         .body(r#"{"data":23}"#)
@@ -57,15 +85,34 @@ fn insert_json_content() {
 
 #[test]
 fn vanilla_get() {
-    let get_req = Object::get(
-        &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
-        None,
-    )
-    .unwrap();
+    let get_req = Object::default()
+        .get(
+            &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
+            None,
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::GET)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
+        .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
+        .body(std::io::empty())
+        .unwrap();
+
+    util::requests_eq(&get_req, &expected);
+}
+
+#[test]
+fn vanilla_get_using_custom_authority() {
+    let get_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+        .get(
+            &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
+            None,
+        )
+        .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::GET)
+        .uri("https://0.0.0.0:4443/storage/v1/b/bucket/o/test%2Fwith%2Fpath_separators?alt=json&prettyPrint=false")
         .body(std::io::empty())
         .unwrap();
 
@@ -74,18 +121,19 @@ fn vanilla_get() {
 
 #[test]
 fn delete_vanilla() {
-    let delete_req = Object::delete(
-        &(
-            &BucketName::non_validated("bucket"),
-            &ObjectName::non_validated("object/with/deep/path"),
-        ),
-        None,
-    )
-    .unwrap();
+    let delete_req = Object::default()
+        .delete(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            None,
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object%2Fwith%2Fdeep%2Fpath?prettyPrint=false")
+        .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/object%2Fwith%2Fdeep%2Fpath?prettyPrint=false")
         .body(std::io::empty())
         .unwrap();
 
@@ -94,22 +142,23 @@ fn delete_vanilla() {
 
 #[test]
 fn delete_some_optional() {
-    let delete_req = Object::delete(
-        &ObjectId::new("bucket", "object").unwrap(),
-        Some(DeleteObjectOptional {
-            generation: Some(20),
-            conditionals: Conditionals {
-                if_metageneration_not_match: Some(999),
+    let delete_req = Object::default()
+        .delete(
+            &ObjectId::new("bucket", "object").unwrap(),
+            Some(DeleteObjectOptional {
+                generation: Some(20),
+                conditionals: Conditionals {
+                    if_metageneration_not_match: Some(999),
+                    ..Default::default()
+                },
                 ..Default::default()
-            },
-            ..Default::default()
-        }),
-    )
-    .unwrap();
+            }),
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false&generation=20&ifMetagenerationNotMatch=999")
+        .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/object?prettyPrint=false&generation=20&ifMetagenerationNotMatch=999")
         .body(std::io::empty())
         .unwrap();
 
@@ -118,30 +167,31 @@ fn delete_some_optional() {
 
 #[test]
 fn delete_all_optional() {
-    let delete_req = Object::delete(
-        &ObjectId::new("bucket", "object").unwrap(),
-        Some(DeleteObjectOptional {
-            standard_params: StandardQueryParameters {
-                fields: Some("field1"),
-                pretty_print: true,
-                quota_user: Some("some-user"),
-                user_ip: Some("some-user-ip"),
-            },
-            generation: Some(1),
-            conditionals: Conditionals {
-                if_generation_match: Some(2),
-                if_generation_not_match: Some(3),
-                if_metageneration_match: Some(4),
-                if_metageneration_not_match: Some(5),
-            },
-            user_project: Some("some-user-project"),
-        }),
-    )
-    .unwrap();
+    let delete_req = Object::default()
+        .delete(
+            &ObjectId::new("bucket", "object").unwrap(),
+            Some(DeleteObjectOptional {
+                standard_params: StandardQueryParameters {
+                    fields: Some("field1"),
+                    pretty_print: true,
+                    quota_user: Some("some-user"),
+                    user_ip: Some("some-user-ip"),
+                },
+                generation: Some(1),
+                conditionals: Conditionals {
+                    if_generation_match: Some(2),
+                    if_generation_not_match: Some(3),
+                    if_metageneration_match: Some(4),
+                    if_metageneration_not_match: Some(5),
+                },
+                user_project: Some("some-user-project"),
+            }),
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::DELETE)
-        .uri("https://www.googleapis.com/storage/v1/b/bucket/o/object?fields=field1&quotaUser=some-user&userIp=some-user-ip&generation=1&ifGenerationMatch=2&ifGenerationNotMatch=3&ifMetagenerationMatch=4&ifMetagenerationNotMatch=5&userProject=some-user-project")
+        .uri("https://storage.googleapis.com/storage/v1/b/bucket/o/object?fields=field1&quotaUser=some-user&userIp=some-user-ip&generation=1&ifGenerationMatch=2&ifGenerationNotMatch=3&ifMetagenerationMatch=4&ifMetagenerationNotMatch=5&userProject=some-user-project")
         .body(std::io::empty())
         .unwrap();
 
@@ -150,19 +200,20 @@ fn delete_all_optional() {
 
 #[test]
 fn list_prefix_and_delimit() {
-    let list_req = Object::list(
-        &BucketName::non_validated("cache"),
-        Some(objects::ListOptional {
-            delimiter: Some("/"),
-            prefix: Some("testing/"),
-            ..Default::default()
-        }),
-    )
-    .unwrap();
+    let list_req = Object::default()
+        .list(
+            &BucketName::non_validated("cache"),
+            Some(objects::ListOptional {
+                delimiter: Some("/"),
+                prefix: Some("testing/"),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::GET)
-        .uri("https://www.googleapis.com/storage/v1/b/cache/o?prettyPrint=false&delimiter=%2F&prefix=testing%2F")
+        .uri("https://storage.googleapis.com/storage/v1/b/cache/o?prettyPrint=false&delimiter=%2F&prefix=testing%2F")
         .body(std::io::empty())
         .unwrap();
 
@@ -171,7 +222,7 @@ fn list_prefix_and_delimit() {
 
 #[test]
 fn parses_list_response() {
-    let body = r#"{"kind":"storage#objects","prefixes":["testing/subdir/"],"items":[{"kind":"storage#object","id":"cache/testing/.gitignore/1563464155846959","selfLink":"https://www.googleapis.com/storage/v1/b/cache/o/testing%2F.gitignore","name":"testing/.gitignore","bucket":"cache","generation":"1563464155846959","metageneration":"1","contentType":"application/octet-stream","timeCreated":"2019-07-18T15:35:55.846Z","updated":"2019-07-18T15:35:55.846Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T15:35:55.846Z","size":"30","md5Hash":"gVBKyp57x/mn4QvE+0fLvg==","mediaLink":"https://www.googleapis.com/download/storage/v1/b/cache/o/testing%2F.gitignore?generation=1563464155846959&alt=media","contentLanguage":"en","crc32c":"f+2iuw==","etag":"CK+yg+3lvuMCEAE="},{"kind":"storage#object","id":"cache/testing/test.zstd/1563439578444057","selfLink":"https://www.googleapis.com/storage/v1/b/cache/o/testing%2Ftest.zstd","name":"testing/test.zstd","bucket":"cache","generation":"1563439578444057","metageneration":"1","timeCreated":"2019-07-18T08:46:18.443Z","updated":"2019-07-18T08:46:18.443Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T08:46:18.443Z","size":"688753933","md5Hash":"UQVzf70LIALAl6hdKnNnnA==","mediaLink":"https://www.googleapis.com/download/storage/v1/b/cache/o/testing%2Ftest.zstd?generation=1563439578444057&alt=media","crc32c":"OFE4Lg==","etag":"CJnizaWKvuMCEAE="}]}"#;
+    let body = r#"{"kind":"storage#objects","prefixes":["testing/subdir/"],"items":[{"kind":"storage#object","id":"cache/testing/.gitignore/1563464155846959","selfLink":"https://storage.googleapis.com/storage/v1/b/cache/o/testing%2F.gitignore","name":"testing/.gitignore","bucket":"cache","generation":"1563464155846959","metageneration":"1","contentType":"application/octet-stream","timeCreated":"2019-07-18T15:35:55.846Z","updated":"2019-07-18T15:35:55.846Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T15:35:55.846Z","size":"30","md5Hash":"gVBKyp57x/mn4QvE+0fLvg==","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/cache/o/testing%2F.gitignore?generation=1563464155846959&alt=media","contentLanguage":"en","crc32c":"f+2iuw==","etag":"CK+yg+3lvuMCEAE="},{"kind":"storage#object","id":"cache/testing/test.zstd/1563439578444057","selfLink":"https://storage.googleapis.com/storage/v1/b/cache/o/testing%2Ftest.zstd","name":"testing/test.zstd","bucket":"cache","generation":"1563439578444057","metageneration":"1","timeCreated":"2019-07-18T08:46:18.443Z","updated":"2019-07-18T08:46:18.443Z","storageClass":"REGIONAL","timeStorageClassUpdated":"2019-07-18T08:46:18.443Z","size":"688753933","md5Hash":"UQVzf70LIALAl6hdKnNnnA==","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/cache/o/testing%2Ftest.zstd?generation=1563439578444057&alt=media","crc32c":"OFE4Lg==","etag":"CJnizaWKvuMCEAE="}]}"#;
 
     let response = http::Response::new(body);
     let list_response = objects::ListResponse::try_from(response).expect("parsed list response");
@@ -211,17 +262,18 @@ fn insert_multipart_text() {
         ..Default::default()
     };
 
-    let insert_req = Object::insert_multipart(
-        &BucketName::non_validated("bucket"),
-        std::io::Cursor::new(body),
-        body.len() as u64,
-        &metadata,
-        None,
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .insert_multipart(
+            &BucketName::non_validated("bucket"),
+            std::io::Cursor::new(body),
+            body.len() as u64,
+            &metadata,
+            None,
+        )
+        .unwrap();
 
     // Example request from https://cloud.google.com/storage/docs/json_api/v1/how-tos/multipart-upload
-    // POST https://www.googleapis.com/upload/storage/v1/b/myBucket/o?uploadType=multipart HTTP/1.1
+    // POST https://storage.googleapis.com/upload/storage/v1/b/myBucket/o?uploadType=multipart HTTP/1.1
     // Authorization: Bearer [YOUR_AUTH_TOKEN]
     // Content-Type: multipart/related; boundary=foo_bar_baz
     // Content-Length: [NUMBER_OF_BYTES_IN_ENTIRE_REQUEST_BODY]
@@ -250,7 +302,7 @@ fn insert_multipart_text() {
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
         .header(http::header::CONTENT_LENGTH, 5758)
         .body(std::io::Cursor::new(expected_body))
@@ -328,14 +380,15 @@ fn insert_multipart_async() {
         ..Default::default()
     };
 
-    let insert_req = Object::insert_multipart(
-        &BucketName::non_validated("bucket"),
-        Cursor::new(body),
-        body.len() as u64,
-        &metadata,
-        None,
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .insert_multipart(
+            &BucketName::non_validated("bucket"),
+            Cursor::new(body),
+            body.len() as u64,
+            &metadata,
+            None,
+        )
+        .unwrap();
 
     let expected_body = format!(
         "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
@@ -346,7 +399,7 @@ fn insert_multipart_async() {
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
         .header(http::header::CONTENT_LENGTH, 5758)
         .body(std::io::Cursor::new(expected_body))
@@ -410,14 +463,15 @@ fn insert_multipart_stream_bytes() {
         ..Default::default()
     };
 
-    let insert_req = Object::insert_multipart(
-        &BucketName::non_validated("bucket"),
-        Bytes::from(TEST_CONTENT),
-        TEST_CONTENT.len() as u64,
-        &metadata,
-        None,
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .insert_multipart(
+            &BucketName::non_validated("bucket"),
+            Bytes::from(TEST_CONTENT),
+            TEST_CONTENT.len() as u64,
+            &metadata,
+            None,
+        )
+        .unwrap();
 
     let exp_body = format!(
         "--{b}\ncontent-type: application/json; charset=utf-8\n\n{}\n--{b}\ncontent-type: text/plain\n\n{}\n--{b}--",
@@ -428,7 +482,7 @@ fn insert_multipart_stream_bytes() {
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=multipart&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "multipart/related; boundary=tame_gcs")
         .header(http::header::CONTENT_LENGTH, 5758)
         .body(exp_body)
@@ -458,7 +512,9 @@ fn patches() {
         ..Default::default()
     };
 
-    let patch_req = Object::patch(&ObjectId::new("bucket", "object").unwrap(), &md, None).unwrap();
+    let patch_req = Object::default()
+        .patch(&ObjectId::new("bucket", "object").unwrap(), &md, None)
+        .unwrap();
 
     let req_body = serde_json::to_vec(&md).unwrap();
     let expected_len = req_body.len();
@@ -479,7 +535,7 @@ fn parses_patch_response() {
     let body = r#"{
         "kind": "storage#object",
         "id": "bucket/test-elf/1591708511706797",
-        "selfLink": "https://www.googleapis.com/storage/v1/b/bucket/o/test-elf",
+        "selfLink": "https://storage.googleapis.com/storage/v1/b/bucket/o/test-elf",
         "name": "test-elf",
         "bucket": "bucket",
         "generation": "1591708511706797",
@@ -528,14 +584,15 @@ fn parses_patch_response() {
 
 #[test]
 fn rewrites_simple() {
-    let rewrite_req = Object::rewrite(
-        &ObjectId::new("source", "object").unwrap(),
-        &ObjectId::new("target", "object/target.sh").unwrap(),
-        None,
-        None,
-        None,
-    )
-    .unwrap();
+    let rewrite_req = Object::default()
+        .rewrite(
+            &ObjectId::new("source", "object").unwrap(),
+            &ObjectId::new("target", "object/target.sh").unwrap(),
+            None,
+            None,
+            None,
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
@@ -548,14 +605,15 @@ fn rewrites_simple() {
 
 #[test]
 fn rewrites_token() {
-    let rewrite_req = Object::rewrite(
-        &ObjectId::new("source", "object/source.sh").unwrap(),
-        &ObjectId::new("target", "object/target.sh").unwrap(),
-        Some("tokeymctoken".to_owned()),
-        None,
-        None,
-    )
-    .unwrap();
+    let rewrite_req = Object::default()
+        .rewrite(
+            &ObjectId::new("source", "object/source.sh").unwrap(),
+            &ObjectId::new("target", "object/target.sh").unwrap(),
+            Some("tokeymctoken".to_owned()),
+            None,
+            None,
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
@@ -575,17 +633,18 @@ fn rewrites_metadata() {
         ..Default::default()
     };
 
-    let rewrite_req = Object::rewrite(
-        &ObjectId::new("source", "object/source.sh").unwrap(),
-        &ObjectId::new("target", "object/target.sh").unwrap(),
-        None,
-        Some(&md),
-        Some(objects::RewriteObjectOptional {
-            max_bytes_rewritten_per_call: Some(20),
-            ..Default::default()
-        }),
-    )
-    .unwrap();
+    let rewrite_req = Object::default()
+        .rewrite(
+            &ObjectId::new("source", "object/source.sh").unwrap(),
+            &ObjectId::new("target", "object/target.sh").unwrap(),
+            None,
+            Some(&md),
+            Some(objects::RewriteObjectOptional {
+                max_bytes_rewritten_per_call: Some(20),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
 
     let req_body = serde_json::to_vec(&md).unwrap();
     let expected_len = req_body.len();
@@ -630,7 +689,7 @@ fn deserializes_complete_rewrite_response() {
         "resource": {
           "kind": "storage#object",
           "id": "bucket/script.sh/1613655147314255",
-          "selfLink": "https://www.googleapis.com/storage/v1/b/bucket/o/script.sh",
+          "selfLink": "https://storage.googleapis.com/storage/v1/b/bucket/o/script.sh",
           "mediaLink": "https://content-storage.googleapis.com/download/storage/v1/b/bucket/o/script.sh?generation=1613655147314255&alt=media",
           "name": "script.sh",
           "bucket": "bucket",

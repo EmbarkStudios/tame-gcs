@@ -7,18 +7,19 @@ mod util;
 
 #[test]
 fn resumable_init() {
-    let insert_req = Object::resumable_insert_init(
-        &(
-            &BucketName::non_validated("bucket"),
-            &ObjectName::non_validated("object/with/deep/path"),
-        ),
-        Some("application/json"),
-    )
-    .unwrap();
+    let insert_req = Object::default()
+        .resumable_insert_init(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            Some("application/json"),
+        )
+        .unwrap();
 
     let expected = http::Request::builder()
         .method(http::Method::POST)
-        .uri("https://www.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=resumable&name=object/with/deep/path")
+        .uri("https://storage.googleapis.com/upload/storage/v1/b/bucket/o?uploadType=resumable&name=object/with/deep/path")
         .header(http::header::CONTENT_LENGTH, 0)
         .header(http::header::HeaderName::from_static("x-upload-content-type"),
         http::header::HeaderValue::from_str("application/json").unwrap())

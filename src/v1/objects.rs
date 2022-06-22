@@ -1,14 +1,16 @@
 //! Types and APIs for interacting with GCS [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
 
 use crate::common::StorageClass;
+use http::uri::Authority;
 use std::collections::BTreeMap;
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __make_obj_url {
-    ($url:expr, $id:expr) => {{
+    ($url:expr, $authority:expr, $id:expr) => {{
         format!(
             $url,
+            $authority.as_str(),
             percent_encoding::percent_encode($id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
             percent_encoding::percent_encode($id.object().as_ref(), crate::util::PATH_ENCODE_SET)
         )
@@ -35,7 +37,25 @@ pub type Timestamp = time::OffsetDateTime;
 
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
-pub struct Object;
+/// Additionally, it can also be used to specify a custom authority.
+#[derive(Clone, Debug)]
+pub struct Object {
+    authority: Authority,
+}
+
+impl Object {
+    pub fn with_authority(authority: Authority) -> Self {
+        Self { authority }
+    }
+}
+
+impl Default for Object {
+    fn default() -> Self {
+        Self {
+            authority: Authority::from_static("storage.googleapis.com"),
+        }
+    }
+}
 
 /// [Metadata](https://cloud.google.com/storage/docs/json_api/v1/objects#resource)
 /// associated with an Object.

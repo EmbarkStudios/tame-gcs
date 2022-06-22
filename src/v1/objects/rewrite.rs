@@ -116,6 +116,7 @@ impl super::Object {
     ///
     /// [Complete API Documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/rewrite)
     pub fn rewrite<'a, OID>(
+        &self,
         source: &OID,
         destination: &OID,
         rewrite_token: Option<String>,
@@ -126,7 +127,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = format!(
-            "https://storage.googleapis.com/storage/v1/b/{}/o/{}/rewriteTo/b/{}/o/{}",
+            "https://{}/storage/v1/b/{}/o/{}/rewriteTo/b/{}/o/{}",
+            self.authority.as_str(),
             percent_encoding::percent_encode(
                 source.bucket().as_ref(),
                 crate::util::PATH_ENCODE_SET
