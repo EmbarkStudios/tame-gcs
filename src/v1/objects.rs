@@ -2,14 +2,16 @@
 
 use crate::common::StorageClass;
 use http::uri::Authority;
+use http::uri::Scheme;
 use std::collections::BTreeMap;
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __make_obj_url {
-    ($url:expr, $authority:expr, $id:expr) => {{
+    ($url:expr, $scheme:expr, $authority:expr, $id:expr) => {{
         format!(
             $url,
+            $scheme.as_str(),
             $authority.as_str(),
             percent_encoding::percent_encode($id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
             percent_encoding::percent_encode($id.object().as_ref(), crate::util::PATH_ENCODE_SET)
@@ -37,25 +39,38 @@ pub type Timestamp = time::OffsetDateTime;
 
 /// Helper struct used to collate all of the operations available for
 /// [Objects](https://cloud.google.com/storage/docs/json_api/v1/objects)
-/// Additionally, it can also be used to specify a custom authority.
+/// Additionally, it can also be used to specify http/https scheme and a custom authority.
 #[derive(Clone, Debug)]
 pub struct Object {
     authority: Authority,
+    scheme: Scheme,
 }
 
 impl Object {
     /// Supplies a custom HTTP authority, allowing a GCS host other than the
     /// standard `storage.googleapis.com` to be used
-    pub fn with_authority(authority: Authority) -> Self {
-        Self { authority }
+    pub fn with_authority(self, authority: Authority) -> Self {
+        Self {
+            scheme: self.scheme,
+            authority,
+        }
+    }
+
+    /// Supplies a valid HTTP scheme, allowing the support for both HTTP and HTTPS
+    pub fn with_scheme(self, scheme: Scheme) -> Self {
+        Self {
+            scheme,
+            authority: self.authority,
+        }
     }
 }
 
 impl Default for Object {
-    /// Defaults to the standard GCS location `storage.googleapis.com`
+    /// Defaults to the standard GCS location `storage.googleapis.com` and uses `https`
     fn default() -> Self {
         Self {
             authority: Authority::from_static("storage.googleapis.com"),
+            scheme: Scheme::HTTPS,
         }
     }
 }
