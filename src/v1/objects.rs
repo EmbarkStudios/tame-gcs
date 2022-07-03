@@ -63,6 +63,14 @@ impl Object {
             authority: self.authority,
         }
     }
+
+    pub fn authority(&self) -> Authority {
+        self.authority.clone()
+    }
+
+    pub fn scheme(&self) -> Scheme {
+        self.scheme.clone()
+    }
 }
 
 impl Default for Object {
