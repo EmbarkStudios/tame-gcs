@@ -11,8 +11,8 @@ macro_rules! __make_obj_url {
         format!(
             $url,
             $authority.as_str(),
-            percent_encoding::percent_encode($id.bucket().as_ref(), crate::util::PATH_ENCODE_SET),
-            percent_encoding::percent_encode($id.object().as_ref(), crate::util::PATH_ENCODE_SET)
+            percent_encoding::percent_encode($id.bucket().as_ref(), $crate::util::PATH_ENCODE_SET),
+            percent_encoding::percent_encode($id.object().as_ref(), $crate::util::PATH_ENCODE_SET)
         )
     }};
 }

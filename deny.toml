@@ -22,8 +22,6 @@ deny = [
     { name = "openssl-sys" },
 ]
 skip = [
-    # hyper uses an old version...and the newest version
-    { name = "itoa", version = "=0.4.8" },
 ]
 skip-tree = []
 
@@ -35,13 +33,13 @@ allow = [
     "Apache-2.0",
     "MIT",
     "BSD-3-Clause",
+    "ISC",
 ]
 exceptions = [
     { allow = ["MPL-2.0"], name = "webpki-roots" },
-    { allow = ["ISC"], name = "untrusted" },
-    { allow = ["ISC"], name = "webpki" },
-    { allow = ["ISC", "MIT", "OpenSSL"], name = "ring" },
+    { allow = ["OpenSSL"], name = "ring" },
     { allow = ["Zlib"], name = "tinyvec" },
+    { allow = ["Unicode-DFS-2016"], name = "unicode-ident" },
 ]
 
 [[licenses.clarify]]
@@ -60,6 +58,13 @@ license-files = [
 
 [[licenses.clarify]]
 name = "webpki"
+expression = "ISC"
+license-files = [
+    { path = "LICENSE", hash = 0x001c7e6c },
+]
+
+[[licenses.clarify]]
+name = "rustls-webpki"
 expression = "ISC"
 license-files = [
     { path = "LICENSE", hash = 0x001c7e6c },

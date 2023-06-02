@@ -132,17 +132,12 @@ pub enum PredefinedAcl {
 }
 
 /// Set of properties to return. Defaults to `NoAcl`.
-#[derive(Serialize, Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Copy, Clone, Debug, PartialEq, Eq, Default)]
 #[serde(rename_all = "camelCase")]
 pub enum Projection {
     /// Include all properties.
     Full,
     /// Omit the owner, acl property.
+    #[default]
     NoAcl,
-}
-
-impl Default for Projection {
-    fn default() -> Self {
-        Projection::NoAcl
-    }
 }

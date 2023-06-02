@@ -37,7 +37,7 @@ doctest = false
 
 [dependencies]
 # Follows version used by rustls
-base64 = "0.13"
+base64 = "0.21"
 # Follows version used by http
 bytes = "1.0"
 futures-util = { version = "0.3", optional = true, features = ["io"] }
