@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- [PR#62](https://github.com/EmbarkStudios/tame-gcs/pull/62) update the `base64` dependency from 0.13 to 0.21.
+
 ## [0.12.0] - 2022-06-22
 ### Changed
 - [PR#59](https://github.com/EmbarkStudios/tame-gcs/pull/59) resolved [#21](https://github.com/EmbarkStudios/tame-gcs/issues/21) by changing `Object` to include an `http::uri::Authority`, defaulting to `storage.googleapis.com`, which allows you to specify your own custom GCS host. Thanks [@yottabytt](https://github.com/yottabytt)!
