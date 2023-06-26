@@ -44,7 +44,6 @@ pub(crate) const PATH_ENCODE_SET: &percent_encoding::AsciiSet = &QUERY_ENCODE_SE
 #[cfg(test)]
 mod test {
     #[test]
-    #[allow(unsafe_code)]
     fn converts_to_hex() {
         let expected = format!("{:x}", 1234529871u32);
 
