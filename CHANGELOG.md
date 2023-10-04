@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.12.2] - 2023-10-04
 ### Changed
 - [PR#63](https://github.com/EmbarkStudios/tame-gcs/pull/63) replaced `base64` with `data-encoding`.
 
@@ -166,7 +167,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.1...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.2...HEAD
+[0.12.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.1...0.12.2
 [0.12.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.0...0.12.1
 [0.12.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.3...0.12.0
 [0.11.3]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.2...0.11.3
