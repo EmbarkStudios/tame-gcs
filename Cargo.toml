@@ -36,15 +36,15 @@ async-multipart = ["futures-util", "pin-utils"]
 doctest = false
 
 [dependencies]
-# Follows version used by rustls
-base64 = "0.21"
+data-encoding = "2.4"
 # Follows version used by http
 bytes = "1.0"
 futures-util = { version = "0.3", optional = true, features = ["io"] }
 http = "0.2"
 percent-encoding = "2.1"
 pin-utils = { version = "0.1.0", optional = true }
-ring = { version = "0.16.16", optional = true }
+# Keep aligned with rustls
+ring = { version = "0.16", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_urlencoded = "0.7"

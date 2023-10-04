@@ -44,7 +44,7 @@ pub enum Error {
     #[error("I/O error occurred")]
     Io(#[source] IoError),
     #[error("Unable to decode base64")]
-    Base64Decode(#[source] base64::DecodeError),
+    Base64Decode(#[source] data_encoding::DecodeError),
     #[error("Unable to encode url")]
     UrlEncode(#[source] serde_urlencoded::ser::Error),
 }
