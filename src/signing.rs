@@ -176,7 +176,7 @@ impl Signer for RingSigner {
                     }
                 }?;
 
-                let mut signature = vec![0; key_pair.public_modulus_len()];
+                let mut signature = vec![0; key_pair.public().modulus_len()];
                 let rng = ring::rand::SystemRandom::new();
 
                 key_pair.sign(

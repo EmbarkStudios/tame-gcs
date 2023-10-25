@@ -32,11 +32,9 @@ confidence-threshold = 0.92
 allow = [
     "Apache-2.0",
     "MIT",
-    "BSD-3-Clause",
     "ISC",
 ]
 exceptions = [
-    { allow = ["MPL-2.0"], name = "webpki-roots" },
     { allow = ["OpenSSL"], name = "ring" },
     { allow = ["Zlib"], name = "tinyvec" },
     { allow = ["Unicode-DFS-2016"], name = "unicode-ident" },
