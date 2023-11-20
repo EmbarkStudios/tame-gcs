@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.12.4] - 2023-11-20
 ### Changed
 - [PR#64](https://github.com/EmbarkStudios/tame-gcs/pull/63) updated `ring` 0.16 -> 0.17.
 
@@ -170,7 +171,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.2...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.4...HEAD
+[0.12.4]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.2...0.12.4
 [0.12.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.1...0.12.2
 [0.12.1]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.0...0.12.1
 [0.12.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.11.3...0.12.0
