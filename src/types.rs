@@ -42,7 +42,7 @@ impl<'a> BucketName<'a> {
 
             match c {
                 'a'..='z' | '0'..='9' => {}
-                '-' | '_' => {
+                '-' | '_' | '.' => {
                     // Bucket names must start and end with a number or letter.
                     if i == 0 || i == last {
                         return Err(Error::InvalidCharacter(i, c));
@@ -322,10 +322,17 @@ mod test {
     }
 
     #[test]
-    fn disallows_dots() {
+    fn allows_dots() {
+        BucketName::try_from("uh.oh").unwrap();
+
+        // But not in incorrect places
         assert_eq!(
-            BucketName::try_from("uh.oh").unwrap_err(),
-            Error::InvalidCharacter(2, '.')
+            BucketName::try_from(".uh.oh").unwrap_err(),
+            Error::InvalidCharacter(0, '.')
+        );
+        assert_eq!(
+            BucketName::try_from("uh.oh.").unwrap_err(),
+            Error::InvalidCharacter(5, '.')
         );
     }
 

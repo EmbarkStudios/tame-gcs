@@ -8,8 +8,6 @@ use std::io;
 
 #[cfg(feature = "async-multipart")]
 mod async_mp;
-#[cfg(feature = "async-multipart")]
-pub use async_mp::*;
 
 const MULTI_PART_SEPARATOR: &[u8] = b"--tame_gcs\n";
 const MULTI_PART_SUFFIX: &[u8] = b"\n--tame_gcs--";
