@@ -322,11 +322,8 @@ mod test {
     }
 
     #[test]
-    fn disallows_dots() {
-        assert_eq!(
-            BucketName::try_from("uh.oh").unwrap_err(),
-            Error::InvalidCharacter(2, '.')
-        );
+    fn allows_dots() {
+        BucketName::try_from("uh.oh").unwrap();
     }
 
     #[test]
