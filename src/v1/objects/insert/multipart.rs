@@ -222,7 +222,8 @@ impl Object {
         };
 
         let mut uri = format!(
-            "https://{}/upload/storage/v1/b/{}/o?uploadType=multipart",
+            "{}://{}/upload/storage/v1/b/{}/o?uploadType=multipart",
+            self.scheme.as_str(),
             self.authority.as_str(),
             percent_encoding::percent_encode(bucket.as_ref(), crate::util::PATH_ENCODE_SET,),
         );
