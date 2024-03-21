@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- [PR#67](https://github.com/EmbarkStudios/tame-gcs/pull/67) update `http` -> 1.1.0.
+
+### Fixed
+- [PR#67](https://github.com/EmbarkStudios/tame-gcs/pull/67) resolved [#58](https://github.com/EmbarkStudios/tame-gcs/issues/58) by allowing `.` in `BucketName`.
+
 ## [0.12.4] - 2023-11-20
 ### Changed
 - [PR#64](https://github.com/EmbarkStudios/tame-gcs/pull/63) updated `ring` 0.16 -> 0.17.
