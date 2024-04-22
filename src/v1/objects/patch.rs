@@ -52,7 +52,12 @@ impl super::Object {
     where
         OID: ObjectIdentifier<'a> + ?Sized,
     {
-        let mut uri = crate::__make_obj_url!("https://{}/storage/v1/b/{}/o/{}", self.authority, id);
+        let mut uri = crate::__make_obj_url!(
+            "{}://{}/storage/v1/b/{}/o/{}",
+            self.scheme,
+            self.authority,
+            id
+        );
 
         let query = optional.unwrap_or_default();
         let query_params = serde_urlencoded::to_string(query)?;

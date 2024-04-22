@@ -60,7 +60,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = crate::__make_obj_url!(
-            "https://{}/storage/v1/b/{}/o/{}?alt=json",
+            "{}://{}/storage/v1/b/{}/o/{}?alt=json",
+            self.scheme,
             self.authority,
             id
         );
