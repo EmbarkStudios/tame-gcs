@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+## [0.14.0] - 2025-04-08
 ### Changed
 - [PR#68](https://github.com/EmbarkStudios/tame-gcs/pull/68) updatd rustls.
 - [PR#71](https://github.com/EmbarkStudios/tame-gcs/pull/71) updated crates and the edition to 2024.
@@ -182,7 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial add of `tame-gcs`
 
 <!-- next-url -->
-[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/EmbarkStudios/tame-gcs/compare/0.14.0...HEAD
+[0.14.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.13.0...0.14.0
 [0.13.0]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.4...0.13.0
 [0.12.4]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.2...0.12.4
 [0.12.2]: https://github.com/EmbarkStudios/tame-gcs/compare/0.12.1...0.12.2
