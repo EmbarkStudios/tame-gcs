@@ -1,8 +1,8 @@
 use super::InsertObjectOptional;
 use crate::{
+    Error,
     objects::{Metadata, Object},
     types::{BucketName, ObjectName},
-    Error,
 };
 use std::io;
 
@@ -217,7 +217,7 @@ impl Object {
                     len: 0,
                     min: 1,
                     max: 1024,
-                })
+                });
             }
         };
 

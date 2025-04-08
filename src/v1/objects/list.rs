@@ -63,7 +63,7 @@ pub struct ListResponse {
     /// and including the requested delimiter.
     pub prefixes: Vec<String>,
     /// The continuation token, included only if there are more items to return.
-    /// Provide this value as the page_token of a subsequent request in order
+    /// Provide this value as the `page_token` of a subsequent request in order
     /// to return the next page of results.
     pub page_token: Option<String>,
 }

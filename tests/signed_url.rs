@@ -1,7 +1,7 @@
 #![cfg(feature = "signing")]
 
 use reqwest::Client;
-use tame_gcs::{signed_url, signing, BucketName, ObjectName};
+use tame_gcs::{BucketName, ObjectName, signed_url, signing};
 
 struct Input {
     svc_account: signing::ServiceAccount,
