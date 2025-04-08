@@ -1,6 +1,6 @@
 use tame_gcs::{
-    objects::{Object, ResumableSession},
     BucketName, ObjectName,
+    objects::{Object, ResumableSession},
 };
 
 mod util;

@@ -1,8 +1,8 @@
 use http::uri::Authority;
 use tame_gcs::{
+    BucketName, ObjectId, ObjectName,
     common::{Conditionals, StandardQueryParameters},
     objects::{self, DeleteObjectOptional, InsertObjectOptional, Metadata, Object},
-    BucketName, ObjectId, ObjectName,
 };
 
 mod util;

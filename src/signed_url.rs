@@ -270,7 +270,7 @@ pub struct SignedUrlOptional<'a> {
     pub authority: http::uri::Authority,
     /// The HTTP method for the request to sign. Defaults to 'GET'.
     pub method: http::Method,
-    /// The lifetime of the signed URL, as measured from the DateTime of the
+    /// The lifetime of the signed URL, as measured from the `DateTime` of the
     /// signed URL creation. Defaults to 1 hour.
     pub duration: std::time::Duration,
     /// Additional headers in the request
@@ -282,7 +282,7 @@ pub struct SignedUrlOptional<'a> {
     pub query_params: Vec<(Cow<'a, str>, Cow<'a, str>)>,
 }
 
-impl<'a> Default for SignedUrlOptional<'a> {
+impl Default for SignedUrlOptional<'_> {
     fn default() -> Self {
         Self {
             authority: http::uri::Authority::from_static("storage.googleapis.com"),

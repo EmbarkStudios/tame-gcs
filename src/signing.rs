@@ -27,7 +27,7 @@ pub enum Key<'a> {
     Hmac(&'a [u8]),
 }
 
-impl<'a> fmt::Debug for Key<'a> {
+impl fmt::Debug for Key<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match self {
             Key::Pkcs8(_) => "pkcs8",
@@ -172,7 +172,7 @@ impl Signer for RingSigner {
                     Key::Hmac(_) => {
                         return Err(Error::KeyRejected(
                             "HMAC cannot be used with RSA signing".to_owned(),
-                        ))
+                        ));
                     }
                 }?;
 

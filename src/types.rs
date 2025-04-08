@@ -70,19 +70,19 @@ impl<'a> BucketName<'a> {
     }
 }
 
-impl<'a> std::fmt::Display for BucketName<'a> {
+impl std::fmt::Display for BucketName<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.name.fmt(f)
     }
 }
 
-impl<'a> AsRef<str> for BucketName<'a> {
+impl AsRef<str> for BucketName<'_> {
     fn as_ref(&self) -> &str {
         self.name.as_ref()
     }
 }
 
-impl<'a> AsRef<[u8]> for BucketName<'a> {
+impl AsRef<[u8]> for BucketName<'_> {
     fn as_ref(&self) -> &[u8] {
         self.name.as_bytes()
     }
@@ -100,7 +100,7 @@ impl<'a> TryFrom<&'a str> for BucketName<'a> {
     }
 }
 
-impl<'a> TryFrom<String> for BucketName<'a> {
+impl TryFrom<String> for BucketName<'_> {
     type Error = Error;
 
     fn try_from(n: String) -> Result<Self, Self::Error> {
@@ -178,19 +178,19 @@ impl<'a> ObjectName<'a> {
     }
 }
 
-impl<'a> std::fmt::Display for ObjectName<'a> {
+impl std::fmt::Display for ObjectName<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.name.fmt(f)
     }
 }
 
-impl<'a> AsRef<str> for ObjectName<'a> {
+impl AsRef<str> for ObjectName<'_> {
     fn as_ref(&self) -> &str {
         self.name.as_ref()
     }
 }
 
-impl<'a> AsRef<[u8]> for ObjectName<'a> {
+impl AsRef<[u8]> for ObjectName<'_> {
     fn as_ref(&self) -> &[u8] {
         self.name.as_bytes()
     }
@@ -208,7 +208,7 @@ impl<'a> TryFrom<&'a str> for ObjectName<'a> {
     }
 }
 
-impl<'a> TryFrom<String> for ObjectName<'a> {
+impl TryFrom<String> for ObjectName<'_> {
     type Error = Error;
 
     fn try_from(n: String) -> Result<Self, Self::Error> {
@@ -260,8 +260,8 @@ pub struct ObjectId<'a> {
 impl<'a> ObjectId<'a> {
     pub fn new<B, O>(bucket: B, object: O) -> Result<Self, Error>
     where
-        B: std::convert::TryInto<BucketName<'a>, Error = Error> + ?Sized,
-        O: std::convert::TryInto<ObjectName<'a>, Error = Error> + ?Sized,
+        B: std::convert::TryInto<BucketName<'a>, Error = Error>,
+        O: std::convert::TryInto<ObjectName<'a>, Error = Error>,
     {
         Ok(Self {
             bucket: bucket.try_into()?,

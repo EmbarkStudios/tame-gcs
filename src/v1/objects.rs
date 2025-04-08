@@ -113,7 +113,7 @@ pub struct Metadata {
     #[serde(default, skip_serializing, deserialize_with = "from_str_opt")]
     pub size: Option<u64>,
     /// MD5 hash of the data; encoded using base64. For more information
-    /// about using the MD5 hash, see Hashes and ETags: Best Practices. **writable**
+    /// about using the MD5 hash, see `Hashes and ETags: Best Practices`. **writable**
     #[serde(skip_serializing_if = "Option::is_none")]
     pub md5_hash: Option<String>,
     /// Media download link.
@@ -122,9 +122,9 @@ pub struct Metadata {
     /// `Content-Language` of the object data. **writable**
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_language: Option<String>,
-    /// CRC32c checksum, as described in RFC 4960, Appendix B; encoded
+    /// `CRC32c` checksum, as described in RFC 4960, Appendix B; encoded
     /// using base64 in big-endian byte order. For more information about
-    /// using the CRC32c checksum, see Hashes and ETags: Best Practices.
+    /// using the `CRC32c` checksum, see `Hashes and ETags: Best Practices`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub crc32c: Option<String>,
     /// HTTP 1.1 Entity tag for the object.

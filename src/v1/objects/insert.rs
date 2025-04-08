@@ -31,7 +31,7 @@ pub struct InsertObjectOptional<'a> {
     #[serde(flatten)]
     pub conditionals: Conditionals,
     /// Resource name of the Cloud KMS key that will be used to encrypt
-    /// the object. Overrides the object metadata's kms_key_name value, if any.
+    /// the object. Overrides the object metadata's `kms_key_name` value, if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub kms_key_name: Option<&'a str>,
     /// Apply a predefined set of access controls to this object.

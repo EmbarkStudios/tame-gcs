@@ -23,14 +23,14 @@ pub struct RewriteObjectOptional<'a> {
     /// Acceptable values are:
     ///
     /// * authenticatedRead: Object owner gets OWNER access, and
-    /// allAuthenticatedUsers get READER access.
+    ///   allAuthenticatedUsers get READER access.
     /// * bucketOwnerFullControl: Object owner gets OWNER access, and project
-    /// team owners get OWNER access.
+    ///   team owners get OWNER access.
     /// * bucketOwnerRead: Object owner gets OWNER access, and project team
-    /// owners get READER access.
+    ///   owners get READER access.
     /// * private: Object owner gets OWNER access.
     /// * projectPrivate: Object owner gets OWNER access, and project team
-    /// members get access according to their roles.
+    ///   members get access according to their roles.
     /// * publicRead: Object owner gets OWNER access, and allUsers get READER access.
     ///
     /// If iamConfiguration.uniformBucketLevelAccess.enabled is set to true,
@@ -85,7 +85,7 @@ pub struct RewriteObjectResponse {
     pub object_size: u64,
     /// Indicates if the rewrite is finished or not
     pub done: bool,
-    /// If done is false, this will be Some() and it must be specified in each
+    /// If done is false, this will be `Some` and it must be specified in each
     /// additional rewrite call until done is true
     pub rewrite_token: Option<String>,
     #[serde(rename = "resource")]

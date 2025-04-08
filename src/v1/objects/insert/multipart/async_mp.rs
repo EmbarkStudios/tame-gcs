@@ -1,8 +1,8 @@
 use super::*;
 use futures_util::{
+    Stream,
     io::{AsyncRead, Result as FuturesResult},
     task::{Context, Poll},
-    Stream,
 };
 use std::pin::Pin;
 

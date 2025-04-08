@@ -8,7 +8,6 @@ targets = [
 all-features = true
 
 [advisories]
-version = 2
 ignore = [
     # difference is unmaintained, but it's dev only, and suits our needs
     # fine for now
@@ -20,20 +19,10 @@ multiple-versions = "deny"
 deny = ["openssl", "openssl-sys"]
 
 [licenses]
-version = 2
 # We want really high confidence when inferring licenses from text
 confidence-threshold = 0.92
-allow = ["Apache-2.0", "MIT", "ISC"]
+allow = ["Apache-2.0", "MIT", "ISC", "Unicode-3.0"]
 exceptions = [
-    { allow = [
-        "OpenSSL",
-    ], crate = "ring" },
-    { allow = [
-        "Zlib",
-    ], crate = "tinyvec" },
-    { allow = [
-        "Unicode-DFS-2016",
-    ], crate = "unicode-ident" },
 ]
 
 [[licenses.clarify]]

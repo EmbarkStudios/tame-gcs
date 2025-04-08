@@ -112,7 +112,7 @@ where
             let (parts, _body) = response.into_parts();
             let end_pos = match parts.headers.get(http::header::RANGE) {
                 Some(range_val) => match range_val.to_str() {
-                    Ok(range) => match range.split('-').last() {
+                    Ok(range) => match range.split('-').next_back() {
                         Some(pos) => {
                             let pos = pos.parse::<u64>();
                             match pos {
@@ -240,12 +240,12 @@ impl Object {
     /// There are two ways to upload the object's data:
     /// * For single chunk upload, set `length` to the total size of the object.
     /// * For multiple chunks upload, set `length` to the size of current chunk
-    /// that is being uploaded and `Content-Range` header as
-    /// `bytes CHUNK_FIRST_BYTE-CHUNK_LAST_BYTE/TOTAL_OBJECT_SIZE` where:
+    ///   that is being uploaded and `Content-Range` header as
+    ///   `bytes CHUNK_FIRST_BYTE-CHUNK_LAST_BYTE/TOTAL_OBJECT_SIZE` where:
     ///    * `CHUNK_FIRST_BYTE` is the starting byte in the overall object that
-    /// the chunk you're uploading contains.
+    ///      the chunk you're uploading contains.
     ///    * `CHUNK_LAST_BYTE` is the ending byte in the overall object that the
-    /// chunk you're uploading contains.
+    ///      chunk you're uploading contains.
     ///    * `TOTAL_OBJECT_SIZE` is the total size of the object you are uploading.
     ///
     /// **NOTE**: `length` should be a multiple of 256KiB, unless it's the last
