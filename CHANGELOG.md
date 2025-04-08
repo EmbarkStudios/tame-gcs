@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+### Changed
+- [PR#68](https://github.com/EmbarkStudios/tame-gcs/pull/68) updatd rustls.
+- [PR#71](https://github.com/EmbarkStudios/tame-gcs/pull/71) updated crates and the edition to 2024.
+
 ## [0.13.0] - 2024-03-21
 ### Changed
 - [PR#67](https://github.com/EmbarkStudios/tame-gcs/pull/67) update `http` -> 1.1.0.
