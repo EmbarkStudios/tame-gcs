@@ -114,7 +114,8 @@ impl super::Object {
         optional: Option<ListOptional<'_>>,
     ) -> Result<http::Request<std::io::Empty>, Error> {
         let mut uri = format!(
-            "https://{}/storage/v1/b/{}/o",
+            "{}://{}/storage/v1/b/{}/o",
+            self.scheme.as_str(),
             self.authority.as_str(),
             bucket
         );

@@ -127,7 +127,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = format!(
-            "https://{}/storage/v1/b/{}/o/{}/rewriteTo/b/{}/o/{}",
+            "{}://{}/storage/v1/b/{}/o/{}/rewriteTo/b/{}/o/{}",
+            self.scheme.as_str(),
             self.authority.as_str(),
             percent_encoding::percent_encode(
                 source.bucket().as_ref(),

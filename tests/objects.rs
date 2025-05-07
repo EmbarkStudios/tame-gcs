@@ -1,4 +1,4 @@
-use http::uri::Authority;
+use http::uri::{Authority, Scheme};
 use tame_gcs::{
     BucketName, ObjectId, ObjectName,
     common::{Conditionals, StandardQueryParameters},
@@ -33,8 +33,9 @@ fn insert_vanilla() {
 }
 
 #[test]
-fn insert_vanilla_using_custom_authority() {
-    let insert_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+fn insert_vanilla_using_https_and_custom_authority() {
+    let insert_req = Object::default()
+        .with_authority(Authority::from_static("0.0.0.0:4443"))
         .insert_simple(
             &(
                 &BucketName::non_validated("bucket"),
@@ -49,6 +50,34 @@ fn insert_vanilla_using_custom_authority() {
     let expected = http::Request::builder()
         .method(http::Method::POST)
         .uri("https://0.0.0.0:4443/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
+        .header(http::header::CONTENT_TYPE, "application/octet-stream")
+        .header(http::header::CONTENT_LENGTH, 13)
+        .body("great content")
+        .unwrap();
+
+    util::requests_eq(&insert_req, &expected);
+}
+
+#[test]
+fn insert_vanilla_using_http_and_custom_authority() {
+    let object = Object::default()
+        .with_scheme(Scheme::HTTP)
+        .with_authority(Authority::from_static("0.0.0.0:4443"));
+    let insert_req = object
+        .insert_simple(
+            &(
+                &BucketName::non_validated("bucket"),
+                &ObjectName::non_validated("object/with/deep/path"),
+            ),
+            "great content",
+            13,
+            None,
+        )
+        .unwrap();
+
+    let expected = http::Request::builder()
+        .method(http::Method::POST)
+        .uri("http://0.0.0.0:4443/upload/storage/v1/b/bucket/o?name=object/with/deep/path&uploadType=media&prettyPrint=false")
         .header(http::header::CONTENT_TYPE, "application/octet-stream")
         .header(http::header::CONTENT_LENGTH, 13)
         .body("great content")
@@ -103,7 +132,8 @@ fn vanilla_get() {
 
 #[test]
 fn vanilla_get_using_custom_authority() {
-    let get_req = Object::with_authority(Authority::from_static("0.0.0.0:4443"))
+    let get_req = Object::default()
+        .with_authority(Authority::from_static("0.0.0.0:4443"))
         .get(
             &ObjectId::new("bucket", "test/with/path_separators").unwrap(),
             None,

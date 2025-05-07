@@ -91,7 +91,8 @@ impl super::Object {
         OID: ObjectIdentifier<'a> + ?Sized,
     {
         let mut uri = format!(
-            "https://{}/upload/storage/v1/b/{}/o?name={}&uploadType=media",
+            "{}://{}/upload/storage/v1/b/{}/o?name={}&uploadType=media",
+            self.scheme.as_str(),
             self.authority.as_str(),
             percent_encoding::percent_encode(id.bucket().as_ref(), crate::util::PATH_ENCODE_SET,),
             percent_encoding::percent_encode(id.object().as_ref(), crate::util::QUERY_ENCODE_SET,),
